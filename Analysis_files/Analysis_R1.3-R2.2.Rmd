@@ -242,7 +242,7 @@ r3 <- vector(mode = "list", length = 0)
 r4 <- vector(mode = "list", length = 0)
 r5 <- vector(mode = "list", length = 0)
 
-Alpha <- matrix(0, nrow = 5, ncol = length(stateList))
+Alpha <- matrix(0, nrow = R, ncol = length(stateList))
 
 for (i in 1:L) {
   book <- paul_pos.list[[i]]
