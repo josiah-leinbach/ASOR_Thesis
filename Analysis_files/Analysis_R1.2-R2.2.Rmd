@@ -352,7 +352,7 @@ for (i in 1:4) {
 ## EM Algorithm: (1) R1 = 2, (2) R = 4, (3) POS = 6
 ```{r}
 EMR <- EM(paul_pos.list, R1, d1, N, pi_reg, A, Alpha, Gamma_array, stateList, 0.001, 50)
-saveRDS(EMR,"EMR-R1.2-regimes4-6pos.rds")
+saveRDS(EMR,"EMR-R1.2-R2.2-9pos.rds")
 ```
 
 
