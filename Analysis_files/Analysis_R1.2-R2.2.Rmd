@@ -17,8 +17,7 @@ source("/Users/josiahleinbach/Documents/ASOR_Thesis/R_files/hmm-paul.R")
 
 # R1 = 2, R2 = 2, POS = 9, 7 Undisputed
 ```{r}
-setwd("~/Documents/ASOR_Thesis/Data/sblgnt-master")
-paul_pos.list <- readRDS("paul_pos.rds")
+paul_pos.list <- readRDS("paul_9pos.rds")
 
 R = 4
 R1 = 2
