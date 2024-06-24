@@ -263,7 +263,12 @@ Alpha[1,] <- round(table(r1_vec)/sum(table(r1_vec)), 4)
 Alpha[2,] <- round(table(r2_vec)/sum(table(r2_vec)), 4)
 Alpha[3,] <- round(table(r3_vec)/sum(table(r3_vec)), 4)
 Alpha[4,] <- round(table(r4_vec)/sum(table(r4_vec)), 4)
-Alpha[5,] <- round(table(r5_vec)/sum(table(r5_vec)), 4)
+
+## Adjust for R5 not having any I POS tags
+for (i in 1:length(stateList)) {
+    q <- as.character(stateList[i])
+    Alpha[5,i] <- sum(r5_vec == q)/length(r5_vec)
+}
 
 colnames(Alpha) <- sort(stateList)
 rownames(Alpha) <- c("R1", "R2", "R3", "R4","R5")
