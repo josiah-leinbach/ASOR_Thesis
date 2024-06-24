@@ -250,7 +250,7 @@ for (i in 1:L) {
   r2 <- append(r2, book[r.mn_id[i,1:length(paul_pos.list[[i]])] == 2])
   r3 <- append(r3, book[r.mn_id[i,1:length(paul_pos.list[[i]])] == 3])
   r4 <- append(r4, book[r.mn_id[i,1:length(paul_pos.list[[i]])] == 4])
-  r5 <- append(r5, book[r.mn_id[i,1:length(paul_pos.list[[i]])] == 4])
+  r5 <- append(r5, book[r.mn_id[i,1:length(paul_pos.list[[i]])] == 5])
 }
 
 r1_vec <- factor(unlist(r1))
@@ -263,11 +263,11 @@ Alpha[1,] <- round(table(r1_vec)/sum(table(r1_vec)), 4)
 Alpha[2,] <- round(table(r2_vec)/sum(table(r2_vec)), 4)
 Alpha[3,] <- round(table(r3_vec)/sum(table(r3_vec)), 4)
 Alpha[4,] <- round(table(r4_vec)/sum(table(r4_vec)), 4)
-Alpha[5,] <- round(table(r5_vec)/sum(table(r4_vec)), 4)
-
+Alpha[5,] <- round(table(r5_vec)/sum(table(r5_vec)), 4)
 
 colnames(Alpha) <- sort(stateList)
 rownames(Alpha) <- c("R1", "R2", "R3", "R4","R5")
+rowSums(Alpha)
 ```
 
 ### Gamma matrix
