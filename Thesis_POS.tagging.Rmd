@@ -1,0 +1,220 @@
+---
+title: "Thesis_POS"
+author: "Josiah Leinbach"
+date: "3/11/2024"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Import books
+```{r}
+setwd("~/Documents/ASOR_Thesis/Data/sblgnt_versless_texts_USE")
+indecl <- read.csv("Indeclinables.csv")
+
+filenames <- list.files(pattern="\\Paul")
+filenames.R <- c("Eph","Php","Col","Thes1","Thes2","Tim1","Tim2","Tit","Phm",
+                 "Rom","Cor1","Cor2","Gal")
+
+for (i in 1:13) {
+  assign(filenames.R[i], readLines(filenames[i], warn = F))
+}
+
+#### Non-Pauline books
+John1 <- readLines("23-1Jn.txt", warn = F)
+Heb <- readLines("19-Heb.txt", warn = F)
+Jam <- readLines("20-Jas.txt", warn = F)
+Pet2 <- readLines("22-2Pe.txt", warn = F)
+```
+
+# Tokenize sentences and words
+```{r}
+#### Sentences
+Rom_s <- strsplit(Rom, "\\;|\\.","·") # Romans
+Cor1_s <- strsplit(Cor1, "\\;|\\.") # 1 Corinthians
+Cor2_s <- strsplit(Cor2, "\\;|\\.") # 2 Corinthians
+Gal_s <- strsplit(Gal, "\\;|\\.") # Galatians
+Eph_s <- strsplit(Eph, "\\;|\\.") # Ephesians
+Php_s <- strsplit(Php, "\\;|\\.") # Philippians
+Col_s <- strsplit(Col, "\\;|\\.") # Colossians
+Thes1_s <- strsplit(Thes1, "\\;|\\.") # 1 Thessalonians
+Thes2_s <- strsplit(Thes2, "\\;|\\.") # 2 Thessalonians
+Tim1_s <- strsplit(Tim1, "\\;|\\.") # 1 Timothy
+Tim2_s <- strsplit(Tim2, "\\;|\\.") # 2 Timothy
+Tit_s <- strsplit(Tit, "\\;|\\.") # Titus
+Phm_s <- strsplit(Phm, "\\;|\\.") # Philemon
+
+#### Non-Pauline books
+John1_s <- strsplit(John1, "\\;|\\.")
+Heb_s <- strsplit(Heb, "\\;|\\.")
+Pet2_s <- strsplit(Pet2, "\\;|\\.")
+Jam_s <- strsplit(Jam, "\\;|\\.") 
+
+#### Words within sentences
+Rom_s.w <- tokenize_words(Rom_s[[1]]) # Romans
+Cor1_s.w <- tokenize_words(Cor1_s[[1]]) # 1 Corinthians
+Cor2_s.w <- tokenize_words(Cor2_s[[1]]) # 2 Corinthians
+Gal_s.w <- tokenize_words(Gal_s[[1]]) # Galatians
+Eph_s.w <- tokenize_words(Eph_s[[1]]) # Ephesians
+Php_s.w <- tokenize_words(Php_s[[1]]) # Philippians
+Col_s.w <- tokenize_words(Col_s[[1]]) # Colossians
+Thes1_s.w <- tokenize_words(Thes1_s[[1]]) # 1 Thessalonians
+Thes2_s.w <- tokenize_words(Thes2_s[[1]]) # 2 Thessalonians
+Tim1_s.w <- tokenize_words(Tim1_s[[1]]) # 1 Timothy
+Tim2_s.w <- tokenize_words(Tim2_s[[1]]) # 2 Timothy
+Tit_s.w <- tokenize_words(Tit_s[[1]]) # Titus
+Phm_s.w <- tokenize_words(Phm_s[[1]]) # Philemon
+
+#### Non-Pauline books
+John1_s.w <- tokenize_words(John1_s[[1]])
+Heb_s.w <- tokenize_words(Heb_s[[1]])
+```
+
+# Merge POS-tagged file with counts
+```{r}
+setwd("~/Documents/ASOR_Thesis/Data/sblgnt-master")
+filenames.2 <- list.files(pattern="\\Paul.df")
+
+filenames.R.2 <- c("Col_POS","Cor1_POS","Cor2_POS","Eph_POS","Gal_POS",
+                   "Heb_POS", "Jam_POS", "John1_POS", "Pet2_POS",
+                   "Phm_POS","Php_POS","Rom_POS",
+                   "Thes1_POS","Thes2_POS","Tim1_POS","Tim2_POS","Tit_POS")
+
+book.list <- c(Col_s, Cor1_s, Cor2_s, Eph_s, Gal_s, 
+               Heb_s, Jam_s, John1_s, Pet2_s, Phm_s, Php_s, Rom_s, 
+               Thes1_s, Thes2_s, Tim1_s, Tim2_s, Tit_s)
+
+
+Original <- c("A","C","D","I","N","P","RA","RD","RI","RP","RR","V","X")
+Combined <- c("A","C","D","I","N","X","RA","P","P","P","P","V","I")
+
+for (i in 1:length(filenames.2)) {
+  csv.file <- read.csv(filenames.2[i])
+  csv.file$Word <- gsub("[[:punct:]]", "", csv.file$Word)
+  book.sent <- book.list[i]
+  s1 <- numeric(0)
+  for (j in 1:length(book.sent[[1]])) {
+    w.token <- tokenize_words(book.sent[[1]])
+    s <- rep(j, length(w.token[[j]]))
+    s1 <- append(s1, s)
+  }
+  csv.file$Sentence <- s1
+  K <- nrow(csv.file)
+  for (k in 1:K) {
+    csv.file$POS_comb[k] <- Combined[Original == csv.file$POS[k]]
+  }
+  assign(paste0(filenames.R.2[i]), csv.file)
+}
+```
+
+# Create spreadsheet
+```{r}
+#### Workbook
+pos_tagging <- createWorkbook()
+
+# Romans
+addWorksheet(pos_tagging, sheetName = "Romans")
+writeData(pos_tagging, sheet = "Romans", data.frame(Rom_POS))
+
+# 1 Corinthians
+addWorksheet(pos_tagging, sheetName = "Corinthians_1")
+writeData(pos_tagging, sheet = "Corinthians_1", data.frame(Cor1_POS))
+
+# 2 Corinthians
+addWorksheet(pos_tagging, sheetName = "Corinthians_2")
+writeData(pos_tagging, sheet = "Corinthians_2", data.frame(Cor2_POS))
+
+# Galatians
+addWorksheet(pos_tagging, sheetName = "Galatians")
+writeData(pos_tagging, sheet = "Galatians", data.frame(Gal_POS))
+
+# Ephesians
+addWorksheet(pos_tagging, sheetName = "Ephesians")
+writeData(pos_tagging, sheet = "Ephesians", data.frame(Eph_POS))
+
+# Philippians
+addWorksheet(pos_tagging, sheetName = "Phlippians")
+writeData(pos_tagging, sheet = "Phlippians", data.frame(Php_POS))
+
+# Colossians
+addWorksheet(pos_tagging, sheetName = "Colossians")
+writeData(pos_tagging, sheet = "Colossians", data.frame(Col_POS))
+
+# 1 Thessalonians
+addWorksheet(pos_tagging, sheetName = "Thessalonians_1")
+writeData(pos_tagging, sheet = "Thessalonians_1", data.frame(Thes1_POS))
+
+# 2 Thessalonians
+addWorksheet(pos_tagging, sheetName = "Thessalonians_2")
+writeData(pos_tagging, sheet = "Thessalonians_2", data.frame(Thes2_POS))
+
+# 1 Timothy
+addWorksheet(pos_tagging, sheetName = "Timothy_1")
+writeData(pos_tagging, sheet = "Timothy_1", data.frame(Tim1_POS))
+
+# 2 Timothy
+addWorksheet(pos_tagging, sheetName = "Timothy_2")
+writeData(pos_tagging, sheet = "Timothy_2", data.frame(Tim2_POS))
+
+# Titus
+addWorksheet(pos_tagging, sheetName = "Titus")
+writeData(pos_tagging, sheet = "Titus", data.frame(Tit_POS))
+
+# Philemon
+addWorksheet(pos_tagging, sheetName = "Philemon")
+writeData(pos_tagging, sheet = "Philemon", data.frame(Phm_POS))
+
+#### Export workbook
+saveWorkbook(pos_tagging, "pos_tagging.xlsx")
+```
+
+# Rdata file
+```{r}
+algorithm_list <- list(Rom_POS, Cor1_POS, Cor2_POS, Gal_POS, Eph_POS,
+                       Php_POS, Col_POS, Thes1_POS, Thes2_POS, Tim1_POS,
+                       Tim2_POS, Tit_POS, Phm_POS, Heb_POS, Jam_POS, Pet2_POS,
+                       John1_POS)
+
+Rdata_names <- c("Rom_POS.list", "Cor1_POS.list", "Cor2_POS.list", "Gal_POS.list", 
+                 "Eph_POS.list", "Php_POS.list", "Col_POS.list", "Thes1_POS.list", 
+                 "Thes2_POS.list", "Tim1_POS.list", "Tim2_POS.list", 
+                 "Tit_POS.list", "Phm_POS.list", "Heb_POS.list", "Jam_POS.list",
+                 "Pet2_POS.list", "John1_POS.list")
+
+for (i in 1:length(Rdata_names)) {
+  book_df <- algorithm_list[[i]]
+  book_for.list <- vector(mode = "list", length = 0)
+  start_p <- 1
+  for (j in 1:max(book_df$Sentence)) {
+    sent_vec <- table(book_df$Sentence)
+    pos_vec <- cumsum(sent_vec)
+    word_vec <- factor(book_df$POS_comb)
+    book_for.list[[j]] <- word_vec[start_p:pos_vec[j]]
+    start_p <- 1 + pos_vec[j]
+  }
+assign(paste0(Rdata_names[i]), book_for.list)
+}
+
+Paul.corpus_list <- list(Rom_POS.list, # Undisputed -- 7
+                         Cor1_POS.list,
+                         Cor2_POS.list,
+                         Gal_POS.list,
+                         Php_POS.list,
+                         Thes1_POS.list,
+                         Phm_POS.list,
+                         Eph_POS.list, # Disputed & not PE -- 3
+                         Col_POS.list,
+                         Thes2_POS.list, 
+                         Tim1_POS.list, # Disputed & PE -- 3
+                         Tim2_POS.list, 
+                         Tit_POS.list,
+                         Heb_POS.list, # Test books
+                         Jam_POS.list,
+                         John1_POS.list,
+                         Pet2_POS.list)
+
+saveRDS(Paul.corpus_list, file = "paul_9pos-plus.4test.rds")
+```
+
