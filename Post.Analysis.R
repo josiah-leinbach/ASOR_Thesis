@@ -20,3 +20,12 @@ BIC_mat[3,3] <- rds_3.3$BIC
 rownames(BIC_mat) <- c("R1 = 1", "R1 = 2", "R1 = 3")
 colnames(BIC_mat) <- c("R2 = 1", "R2 = 2", "R2 = 3")
 
+# Build table for (R1 = 2, R2 = 1)
+styles_mat <- matrix(data = 0, nrow = 13, ncol = 3)
+id <- rds_2.1$id
+
+for (i in 1:13) {
+  for (j in 1:3) {
+    styles_mat[i,j] <- sum(id[i,] == j, na.rm = T)
+  }
+}
