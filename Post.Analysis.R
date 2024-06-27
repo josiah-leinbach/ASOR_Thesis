@@ -29,3 +29,7 @@ for (i in 1:13) {
     styles_mat[i,j] <- sum(id[i,] == j, na.rm = T)
   }
 }
+
+colnames(styles_mat) <- c("Paul_1", "Paul_2", "Non-Paul_1")
+rownames(styles_mat) <- c("Rom", "Cor.1", "Cor.2", "Gal", "Php", "Thes.1", "Phm", "Eph", "Col", "Thes.2",
+               "Tim.1", "Tim.2", "Tit")
