@@ -12,6 +12,7 @@ library(tseries)
 
 # Build initial table for (R1 = 2, R2 = 1)
 ```{r}
+rds_2.1 <- readRDS("EMR-R1.2-R2.2-9pos.rds")
 styles_mat <- matrix(data = 0, nrow = 13, ncol = 3)
 id <- rds_2.1$id
 
