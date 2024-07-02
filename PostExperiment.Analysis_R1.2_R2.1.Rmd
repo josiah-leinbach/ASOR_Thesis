@@ -87,7 +87,8 @@ styles_mat.0 <- styles_mat.0 %>%
 ## Philippians
 ### EM Algorithm on 7 Undisputed Minus Philippians
 ```{r}
-id <- rds_2.1$id
+rds_php <- readRDS("EMR-R1.2-R2.1-9pos_Test.Php.rds")
+id <- rds_php$id
 styles_mat <- matrix(data = 0, nrow = 13, ncol = 3)
 
 for (i in 1:13) {
