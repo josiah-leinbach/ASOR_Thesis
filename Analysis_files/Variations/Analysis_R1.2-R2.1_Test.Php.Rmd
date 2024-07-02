@@ -14,7 +14,7 @@ library(mhsmm)
 source("/Users/josiahleinbach/Documents/ASOR_Thesis/R_files/hmm-paul.R")
 ```
 
-# R1 = 2, R2 = 1, POS = 6, 7 Undisputed
+# R1 = 2, R2 = 1, POS = 6, 7 Undisputed Philippians
 ```{r}
 paul_pos.list <- readRDS("paul_9pos.rds")
 paul_pos.list <- c(paul_pos.list[c(-5)], paul_pos.list[5])
