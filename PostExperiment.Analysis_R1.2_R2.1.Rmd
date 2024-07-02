@@ -8,24 +8,26 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tseries)
+library(dplyr)
+library(tidyverse)
 ```
 
 # Build initial table for (R1 = 2, R2 = 1)
 ```{r}
 rds_2.1 <- readRDS("EMR-R1.2-R2.2-9pos.rds")
-styles_mat <- matrix(data = 0, nrow = 13, ncol = 3)
+styles_mat.0 <- matrix(data = 0, nrow = 13, ncol = 3)
 id <- rds_2.1$id
 
 for (i in 1:13) {
   for (j in 1:3) {
-    styles_mat[i,j] <- sum(id[i,] == j, na.rm = T)
+    styles_mat.0[i,j] <- sum(id[i,] == j, na.rm = T)
   }
 }
 
-colnames(styles_mat) <- c("Paul_1", "Paul_2", "Non-Paul_1")
+colnames(styles_mat.0) <- c("Paul_1", "Paul_2", "Non-Paul_1")
 
-N <- rowSums(styles_mat)
-styles_mat <- as.data.frame(styles_mat)
+N <- rowSums(styles_mat.0)
+styles_mat.0 <- as.data.frame(styles_mat.0)
 ```
 
 ## Runs test
@@ -70,16 +72,81 @@ for (i in 1:13) {
 ```{r}
 books_vec <- c("Rom", "Cor.1", "Cor.2", "Gal", "Php", "Thes.1", "Phm", "Eph", "Col", "Thes.2",
                "Tim.1", "Tim.2", "Tit")
-styles_mat$Book <- books_vec
-styles_mat$Run.Results <- round(Run.Results, 8)
+styles_mat.0$Book <- books_vec
+styles_mat.0$Run.Results <- round(Run.Results, 8)
 
-styles_mat <- styles_mat %>%
+styles_mat.0 <- styles_mat.0 %>%
   rowwise() %>%
   mutate(Paul_perc = sum(Paul_1, Paul_2)/sum(Paul_1, Paul_2, `Non-Paul_1`))
-styles_mat <- styles_mat %>% 
+styles_mat.0 <- styles_mat.0 %>% 
   relocate(Book, .before = Paul_1) %>%
   relocate(Paul_perc, .before = Run.Results)
 ```
 
+# Results with tests on various books
+## Philippians
+### EM Algorithm on 7 Undisputed Minus Philippians
+```{r}
+id <- readRDS("EMR-R1.2-R2.1-9pos_Test.Php.rds")
+styles_mat <- matrix(data = 0, nrow = 13, ncol = 3)
 
+for (i in 1:13) {
+  for (j in 1:3) {
+    styles_mat[i,j] <- sum(id[i,] == j, na.rm = T)
+  }
+}
+colnames(styles_mat) <- c("Paul_1", "Paul_2", "Non-Paul_1")
 
+books_vec <- c("Rom", "Cor.1", "Cor.2", "Gal", "Thes.1", "Phm", "Eph", "Col", "Thes.2",
+                 "Tim.1", "Tim.2", "Tit", "Php")
+styles_mat$Book <- books_vec
+book.type <- factor(c("Disputed_Non.PE","Undisputed","Undisputed","Disputed_Non.PE","Undisputed",
+               "Undisputed","Undisputed","Undisputed","Undisputed","Disputed_Non.PE",
+               "Disputed_PE","Disputed_PE","Disputed_PE"))
+
+styles_mat <- styles_mat %>%
+  rowwise() %>%
+  mutate(Total_sent = sum(Paul_1, Paul_2, `Non-Paul_1`)) %>%
+  mutate(Paul_perc = sum(Paul_1, Paul_2)/sum(Paul_1, Paul_2, `Non-Paul_1`)) %>%
+  relocate(Book, .before = Paul_1) %>%
+  arrange(Book) %>%
+  add_column(Class = book.type) %>%
+  relocate(Class, .before = Paul_1)
+```
+
+### EM Algorithm on all 7 Undisputed
+```{r}
+id.2 <- rds_2.1$id
+styles_mat.2 <- matrix(data = 0, nrow = 13, ncol = 3)
+
+for (i in 1:13) {
+  for (j in 1:3) {
+    styles_mat.2[i,j] <- sum(id.2[i,] == j, na.rm = T)
+  }
+}
+
+colnames(styles_mat.2) <- c("Paul_1", "Paul_2", "Non-Paul_1")
+books_vec.2 <- c("Rom", "Cor.1", "Cor.2", "Gal", "Php", "Thes.1", "Phm", "Eph", "Col", "Thes.2",
+               "Tim.1", "Tim.2", "Tit")
+styles_mat.2$Book <- books_vec.2
+
+styles_mat.2 <- styles_mat.2 %>%
+  rowwise() %>%
+  mutate(Total_sent = sum(Paul_1, Paul_2, `Non-Paul_1`)) %>%
+  mutate(Paul_perc = sum(Paul_1, Paul_2)/sum(Paul_1, Paul_2, `Non-Paul_1`)) %>% 
+  relocate(Book, .before = Paul_1) %>%
+  arrange(Book) %>%
+  add_column(Class = book.type) %>%
+  relocate(Class, .before = Paul_1)
+```
+
+### Compare results
+```{r}
+test_diff <- tibble(
+  Book = styles_mat$Book,
+  Class = styles_mat$Class,
+)
+test_diff.1 <- styles_mat[,c(3,4,5,7)] - styles_mat.2[,c(3,4,5,7)]
+
+styles_diff <- tibble(test_diff, test_diff.1)
+```
