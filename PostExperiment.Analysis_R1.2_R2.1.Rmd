@@ -88,25 +88,25 @@ styles_mat.0 <- styles_mat.0 %>%
 ### EM Algorithm on 7 Undisputed Minus Philippians
 ```{r}
 rds_php <- readRDS("EMR-R1.2-R2.1-9pos_Test.Php.rds")
-id <- rds_php$id
-styles_mat <- matrix(data = 0, nrow = 13, ncol = 3)
+id_php <- rds_php$id
+styles.mat_php <- matrix(data = 0, nrow = 13, ncol = 3)
 
 for (i in 1:13) {
   for (j in 1:3) {
-    styles_mat[i,j] <- sum(id[i,] == j, na.rm = T)
+    styles.mat_php[i,j] <- sum(id_php[i,] == j, na.rm = T)
   }
 }
-colnames(styles_mat) <- c("Paul_1", "Paul_2", "Non-Paul_1")
-styles_mat <- as_tibble(styles_mat)
+colnames(styles.mat_php) <- c("Paul_1", "Paul_2", "Non-Paul_1")
+styles.mat_php <- as_tibble(styles.mat_php)
 
 books_vec <- c("Rom", "Cor.1", "Cor.2", "Gal", "Thes.1", "Phm", "Eph", "Col", "Thes.2",
-                 "Tim.1", "Tim.2", "Tit", "Php")
-styles_mat$Book <- books_vec
+               "Tim.1", "Tim.2", "Tit", "Php")
+styles.mat_php$Book <- books_vec
 book.type <- factor(c("Disputed_Non.PE","Undisputed","Undisputed","Disputed_Non.PE","Undisputed",
-               "Undisputed","Undisputed","Undisputed","Undisputed","Disputed_Non.PE",
-               "Disputed_PE","Disputed_PE","Disputed_PE"))
+                      "Undisputed","Undisputed","Undisputed","Undisputed","Disputed_Non.PE",
+                      "Disputed_PE","Disputed_PE","Disputed_PE"))
 
-styles_mat <- styles_mat %>%
+styles.mat_php <- styles.mat_php %>%
   rowwise() %>%
   mutate(Total_sent = sum(Paul_1, Paul_2, `Non-Paul_1`)) %>%
   mutate(Paul_perc = sum(Paul_1, Paul_2)/sum(Paul_1, Paul_2, `Non-Paul_1`)) %>%
@@ -147,10 +147,53 @@ styles_mat.2 <- styles_mat.2 %>%
 ### Compare results
 ```{r}
 test_diff <- tibble(
-  Book = styles_mat$Book,
-  Class = styles_mat$Class,
+  Book = styles.mat_php$Book,
+  Class = styles.mat_php$Class,
 )
-test_diff.1 <- styles_mat[,c(3,4,5,7)] - styles_mat.2[,c(3,4,5,7)]
+test_diff.1 <- styles.mat_php[,c(3,4,5,7)] - styles_mat.2[,c(3,4,5,7)]
+
+styles_diff <- tibble(test_diff, test_diff.1)
+```
+
+## 1 Thessalonians
+### EM Algorithm on 7 Undisputed Minus Philippians
+```{r}
+rds_php <- readRDS("EMR-R1.2-R2.1-9pos_Test.Php.rds")
+id_thes1 <- rds_php$id
+styles.mat_thes1 <- matrix(data = 0, nrow = 13, ncol = 3)
+
+for (i in 1:13) {
+  for (j in 1:3) {
+    styles.mat_thes1[i,j] <- sum(id_thes1[i,] == j, na.rm = T)
+  }
+}
+colnames(styles.mat_thes1) <- c("Paul_1", "Paul_2", "Non-Paul_1")
+styles.mat_thes1 <- as_tibble(styles.mat_thes1)
+
+books_vec <- c("Rom", "Cor.1", "Cor.2", "Gal", "Php", "Phm", "Eph", "Col", "Thes.2",
+               "Tim.1", "Tim.2", "Tit", "Thes.1")
+styles.mat_thes1$Book <- books_vec
+book.type <- factor(c("Disputed_Non.PE","Undisputed","Undisputed","Disputed_Non.PE","Undisputed",
+                      "Undisputed","Undisputed","Undisputed","Undisputed","Disputed_Non.PE",
+                      "Disputed_PE","Disputed_PE","Disputed_PE"))
+
+styles.mat_thes1 <- styles.mat_thes1 %>%
+  rowwise() %>%
+  mutate(Total_sent = sum(Paul_1, Paul_2, `Non-Paul_1`)) %>%
+  mutate(Paul_perc = sum(Paul_1, Paul_2)/sum(Paul_1, Paul_2, `Non-Paul_1`)) %>%
+  relocate(Book, .before = Paul_1) %>%
+  arrange(Book) %>%
+  add_column(Class = book.type) %>%
+  relocate(Class, .before = Paul_1)
+```
+
+### Compare results
+```{r}
+test_diff <- tibble(
+  Book = styles.mat_php$Book,
+  Class = styles.mat_php$Class,
+)
+test_diff.1 <- styles.mat_php[,c(3,4,5,7)] - styles_mat.2[,c(3,4,5,7)]
 
 styles_diff <- tibble(test_diff, test_diff.1)
 ```
