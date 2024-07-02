@@ -14,7 +14,7 @@ library(tidyverse)
 
 # Build initial table for (R1 = 2, R2 = 1)
 ```{r}
-rds_2.1 <- readRDS("EMR-R1.2-R2.2-9pos.rds")
+rds_2.1 <- readRDS("EMR-R1.2-R2.1-9pos.rds")
 styles_mat.0 <- matrix(data = 0, nrow = 13, ncol = 3)
 id <- rds_2.1$id
 
@@ -87,7 +87,7 @@ styles_mat.0 <- styles_mat.0 %>%
 ## Philippians
 ### EM Algorithm on 7 Undisputed Minus Philippians
 ```{r}
-id <- readRDS("EMR-R1.2-R2.1-9pos_Test.Php.rds")
+id <- rds_2.1$id
 styles_mat <- matrix(data = 0, nrow = 13, ncol = 3)
 
 for (i in 1:13) {
@@ -96,6 +96,7 @@ for (i in 1:13) {
   }
 }
 colnames(styles_mat) <- c("Paul_1", "Paul_2", "Non-Paul_1")
+styles_mat <- as_tibble(styles_mat)
 
 books_vec <- c("Rom", "Cor.1", "Cor.2", "Gal", "Thes.1", "Phm", "Eph", "Col", "Thes.2",
                  "Tim.1", "Tim.2", "Tit", "Php")
@@ -126,6 +127,8 @@ for (i in 1:13) {
 }
 
 colnames(styles_mat.2) <- c("Paul_1", "Paul_2", "Non-Paul_1")
+styles_mat.2 <- as_tibble(styles_mat.2)
+
 books_vec.2 <- c("Rom", "Cor.1", "Cor.2", "Gal", "Php", "Thes.1", "Phm", "Eph", "Col", "Thes.2",
                "Tim.1", "Tim.2", "Tit")
 styles_mat.2$Book <- books_vec.2
