@@ -121,8 +121,8 @@ for (i in 1:R) {
 for (i in 1:R) {
   for (j in 1:R) {
     counter <- numeric(0)
-    for (k in 1:(N[6]-1)) {
-      if (r.mn_id[6,k] == i && r.mn_id[6,k+1] == j) {
+    for (k in 1:(N[5]-1)) {
+      if (r.mn_id[5,k] == i && r.mn_id[5,k+1] == j) {
         counter <- append(counter, 1)
       }
     }
