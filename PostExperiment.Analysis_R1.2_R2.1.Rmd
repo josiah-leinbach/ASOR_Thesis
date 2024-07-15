@@ -240,3 +240,35 @@ test_diff.1 <- styles.mat_gal[,c(3,4,5,7)] - styles_mat.2[,c(3,4,5,7)]
 
 styles.diff_gal <- tibble(test_diff, test_diff.1)
 ```
+
+## Test on 1, 2, and 3 John
+### EM Algorithm on 7 Undisputed + 1, 2, and 3 John
+```{r}
+rds_John123 <- readRDS("EMR.John123-R1.2-R2.1-9pos.rds")
+id_John123 <- rds_John123$id
+styles.mat_John123 <- matrix(data = 0, nrow = 16, ncol = 3)
+
+for (i in 1:16) {
+  for (j in 1:3) {
+    styles.mat_John123[i,j] <- sum(id_John123[i,] == j, na.rm = T)
+  }
+}
+colnames(styles.mat_John123) <- c("Paul_1", "Paul_2", "Non-Paul_1")
+styles.mat_John123 <- as_tibble(styles.mat_John123)
+
+books_vec.John123 <- c("Rom", "Cor.1", "Cor.2", "Gal", "Php", "Thes.1", "Phm", "Eph", "Col", "Thes.2",
+               "Tim.1", "Tim.2", "Tit", "John.1", "John.2", "John.3")
+styles.mat_John123$Book <- books_vec.John123
+book.type <- factor(c("Disputed_Non.PE","Undisputed","Undisputed","Disputed_Non.PE","Undisputed",
+                      "Johannine", "Johannine", "Johannine", "Undisputed", "Undisputed", "Undisputed",
+                      "Undisputed", "Disputed_PE", "Disputed_PE", "Disputed_PE", "Disputed_PE"))
+                      
+styles.mat_John123 <- styles.mat_John123 %>%
+  rowwise() %>%
+  mutate(Total_sent = sum(Paul_1, Paul_2, `Non-Paul_1`)) %>%
+  mutate(Paul_perc = sum(Paul_1, Paul_2)/sum(Paul_1, Paul_2, `Non-Paul_1`)) %>%
+  relocate(Book, .before = Paul_1) %>%
+  arrange(Book) %>%
+  add_column(Class = book.type) %>%
+  relocate(Class, .before = Paul_1)
+```
