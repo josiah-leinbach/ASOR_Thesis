@@ -17,7 +17,7 @@ source("/Users/josiahleinbach/Documents/ASOR_Thesis/R_files/hmm-paul.R")
 # R1 = 2, R2 = 2, POS = 9, 7 Undisputed + 2 John
 ```{r}
 paul_pos.list <- readRDS("paul_9pos-plus.6test.rds")
-paul_pos.list <- paul_pos.list[-c(14:18)]
+paul_pos.list <- paul_pos.list[-c(15:18)]
 
 R = 4
 R1 = 2
@@ -27,7 +27,7 @@ stateList <- factor(c("A","C","D","I","N","X","RA","P","V"))
 stateList <- sort(stateList)
 K <- length(stateList)
 A <- diag(R)
-L <- 14
+L <- 15
 
 sent_leng <- numeric(L)
 for (i in 1:L) {
@@ -236,12 +236,25 @@ for (i in 1:R) {
 }
 
 #### D_2 books: 3 John #####
-# 2 John
+# Hebrews
 for (i in 1:R) {
   for (j in 1:R) {
     counter <- numeric(0)
     for (k in 1:(N[14]-1)) {
       if (r.mn_id[14,k] == i && r.mn_id[14,k+1] == j) {
+        counter <- append(counter, 1)
+      }
+    }
+    A[i,j] <- A[i,j] + sum(counter)
+  }
+}
+
+# 3 John
+for (i in 1:R) {
+  for (j in 1:R) {
+    counter <- numeric(0)
+    for (k in 1:(N[15]-1)) {
+      if (r.mn_id[15,k] == i && r.mn_id[15,k+1] == j) {
         counter <- append(counter, 1)
       }
     }
@@ -366,7 +379,7 @@ for (i in 1:4) {
 ## EM Algorithm: (1) R1 = 2, (2) R = 4, (3) POS = 9
 ```{r}
 EMR <- EM(paul_pos.list, R1, d1, N, pi_reg, A, Alpha, Gamma_array, stateList, 0.001, 50)
-saveRDS(EMR,"EMR.John3-R1.2-R2.2-9pos.rds")
+saveRDS(EMR,"EMR.HJ3-R1.2-R2.2-9pos.rds")
 ```
 
 
