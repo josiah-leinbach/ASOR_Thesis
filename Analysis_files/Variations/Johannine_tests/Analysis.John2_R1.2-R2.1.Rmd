@@ -1,0 +1,349 @@
+---
+title: "EM Algorithm on R1 = 2 and R2 = 1 Regimes: 1 John"
+output: html_document
+date: "2024-06-21"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Import EM functions
+```{r}
+source("/Users/josiahleinbach/Documents/ASOR_Thesis/R_files/hmm-paul.R")
+```
+
+# R1 = 2, R2 = 1, POS = 9, 7 Undisputed
+```{r}
+paul_pos.list <- readRDS("paul_9pos-plus.6test.rds")
+paul_pos.list <- paul_pos.list[-c(14,15,16,17,19)]
+
+R = 3
+R1 = 2
+R2 = R - R1
+
+stateList <- factor(c("A","C","D","I","N","X","RA","P","V"))
+stateList <- sort(stateList)
+K <- length(stateList)
+A <- diag(R)
+L <- 14
+
+sent_leng <- numeric(L)
+for (i in 1:L) {
+  sent_leng[i] <- length(paul_pos.list[[i]])
+}
+
+N <- sent_leng
+d1 <- 7
+r.mn_id <- matrix(NA, nrow = L, ncol = max(N))
+B <- matrix(0, nrow = R1, ncol = R)
+
+pi_reg <- c(0.5, 0.3, 0.2)
+for (i in 1:R1){
+  B[i,i] <- 1
+}
+
+set.seed(1215)
+for (i in 1:L){
+  if (i <= d1){
+    aa <- B%*%pi_reg # select R_1 regimes from pi_reg
+    pit <- aa/norm(aa) # normalized aa
+    Rcurrent <- R1
+  }else {
+    pit <- pi_reg
+    Rcurrent <- R
+  }
+  r.mn_id[i,1:N[i]] <- apply(rmultinom(N[i], 1, pit), 2,which.max) ## generate regime id
+}
+```
+
+## Estimate initial A, Alpha, and Gamma matrices
+### A matrix
+```{r}
+A <- matrix(0, nrow = R, ncol = R)
+
+##### D_1 books #####
+# Romans
+for (i in 1:R) {
+  for (j in 1:R) {
+    counter <- numeric(0)
+    for (k in 1:(N[1]-1)) {
+      if (r.mn_id[1,k] == i && r.mn_id[1,k+1] == j) {
+        counter <- append(counter, 1)
+      }
+    }
+    A[i,j] <- A[i,j] + sum(counter)
+  }
+}
+
+# 1 Corinthians
+for (i in 1:R) {
+  for (j in 1:R) {
+    counter <- numeric(0)
+    for (k in 1:(N[2]-1)) {
+      if (r.mn_id[2,k] == i && r.mn_id[2,k+1] == j) {
+        counter <- append(counter, 1)
+      }
+    }
+    A[i,j] <- A[i,j] + sum(counter)
+  }
+}
+
+# 2 Corinthians
+for (i in 1:R) {
+  for (j in 1:R) {
+    counter <- numeric(0)
+    for (k in 1:(N[3]-1)) {
+      if (r.mn_id[3,k] == i && r.mn_id[3,k+1] == j) {
+        counter <- append(counter, 1)
+      }
+    }
+    A[i,j] <- A[i,j] + sum(counter)
+  }
+}
+
+# Galatians
+for (i in 1:R) {
+  for (j in 1:R) {
+    counter <- numeric(0)
+    for (k in 1:(N[4]-1)) {
+      if (r.mn_id[4,k] == i && r.mn_id[4,k+1] == j) {
+        counter <- append(counter, 1)
+      }
+    }
+    A[i,j] <- A[i,j] + sum(counter)
+  }
+}
+
+# Philippians
+for (i in 1:R) {
+  for (j in 1:R) {
+    counter <- numeric(0)
+    for (k in 1:(N[5]-1)) {
+      if (r.mn_id[5,k] == i && r.mn_id[5,k+1] == j) {
+        counter <- append(counter, 1)
+      }
+    }
+    A[i,j] <- A[i,j] + sum(counter)
+  }
+}
+
+# 1 Thessalonians
+for (i in 1:R) {
+  for (j in 1:R) {
+    counter <- numeric(0)
+    for (k in 1:(N[6]-1)) {
+      if (r.mn_id[6,k] == i && r.mn_id[6,k+1] == j) {
+        counter <- append(counter, 1)
+      }
+    }
+    A[i,j] <- A[i,j] + sum(counter)
+  }
+}
+
+# Philemon
+for (i in 1:R) {
+  for (j in 1:R) {
+    counter <- numeric(0)
+    for (k in 1:(N[7]-1)) {
+      if (r.mn_id[7,k] == i && r.mn_id[7,k+1] == j) {
+        counter <- append(counter, 1)
+      }
+    }
+    A[i,j] <- A[i,j] + sum(counter)
+  }
+}
+
+##### D_2 books: not PE #####
+# Ephesians
+for (i in 1:R) {
+  for (j in 1:R) {
+    counter <- numeric(0)
+    for (k in 1:(N[8]-1)) {
+      if (r.mn_id[8,k] == i && r.mn_id[8,k+1] == j) {
+        counter <- append(counter, 1)
+      }
+    }
+    A[i,j] <- A[i,j] + sum(counter)
+  }
+}
+
+# Colossians
+for (i in 1:R) {
+  for (j in 1:R) {
+    counter <- numeric(0)
+    for (k in 1:(N[9]-1)) {
+      if (r.mn_id[9,k] == i && r.mn_id[9,k+1] == j) {
+        counter <- append(counter, 1)
+      }
+    }
+    A[i,j] <- A[i,j] + sum(counter)
+  }
+}
+
+# 2 Thessalonians
+for (i in 1:R) {
+  for (j in 1:R) {
+    counter <- numeric(0)
+    for (k in 1:(N[10]-1)) {
+      if (r.mn_id[10,k] == i && r.mn_id[10,k+1] == j) {
+        counter <- append(counter, 1)
+      }
+    }
+    A[i,j] <- A[i,j] + sum(counter)
+  }
+}
+
+#### D_2 books: PE #####
+# 1 Timothy
+for (i in 1:R) {
+  for (j in 1:R) {
+    counter <- numeric(0)
+    for (k in 1:(N[11]-1)) {
+      if (r.mn_id[11,k] == i && r.mn_id[11,k+1] == j) {
+        counter <- append(counter, 1)
+      }
+    }
+    A[i,j] <- A[i,j] + sum(counter)
+  }
+}
+
+# 2 Timothy
+for (i in 1:R) {
+  for (j in 1:R) {
+    counter <- numeric(0)
+    for (k in 1:(N[12]-1)) {
+      if (r.mn_id[12,k] == i && r.mn_id[12,k+1] == j) {
+        counter <- append(counter, 1)
+      }
+    }
+    A[i,j] <- A[i,j] + sum(counter)
+  }
+}
+
+# Titus
+for (i in 1:R) {
+  for (j in 1:R) {
+    counter <- numeric(0)
+    for (k in 1:(N[13]-1)) {
+      if (r.mn_id[13,k] == i && r.mn_id[13,k+1] == j) {
+        counter <- append(counter, 1)
+      }
+    }
+    A[i,j] <- A[i,j] + sum(counter)
+  }
+}
+
+#### D_2 Books: 2 John ####
+# 1 John
+for (i in 1:R) {
+  for (j in 1:R) {
+    counter <- numeric(0)
+    for (k in 1:(N[14]-1)) {
+      if (r.mn_id[14,k] == i && r.mn_id[14,k+1] == j) {
+        counter <- append(counter, 1)
+      }
+    }
+    A[i,j] <- A[i,j] + sum(counter)
+  }
+}
+
+# Normalize rows
+A <- round(A/rowSums(A), 4)
+colnames(A) <- c("R1","R2","R3")
+rownames(A) <- c("R1","R2","R3")
+```
+
+### Alpha Matrix
+```{r}
+r1 <- vector(mode = "list", length = 0)
+r2 <- vector(mode = "list", length = 0)
+r3 <- vector(mode = "list", length = 0)
+
+Alpha <- matrix(0, nrow = R, ncol = length(stateList))
+
+for (i in 1:L) {
+  book <- paul_pos.list[[i]]
+  r1 <- append(r1, book[r.mn_id[i,1:length(paul_pos.list[[i]])] == 1])
+  r2 <- append(r2, book[r.mn_id[i,1:length(paul_pos.list[[i]])] == 2])
+  r3 <- append(r3, book[r.mn_id[i,1:length(paul_pos.list[[i]])] == 3])
+}
+
+r1_vec <- factor(unlist(r1))
+r2_vec <- factor(unlist(r2))
+r3_vec <- factor(unlist(r3))
+
+Alpha[1,] <- round(table(r1_vec)/sum(table(r1_vec)), 4)
+Alpha[2,] <- round(table(r2_vec)/sum(table(r2_vec)), 4)
+Alpha[3,] <- round(table(r3_vec)/sum(table(r3_vec)), 4)
+
+colnames(Alpha) <- sort(stateList)
+rownames(Alpha) <- c("R1", "R2", "R3")
+```
+
+### Gamma matrix
+```{r}
+Gamma_array <- array(0, dim=c(R,K,K))
+
+# Regime 1
+regime_1 <- matrix(data = NA, K, K)
+
+for (i in 1:K) {
+  for (j in 1:K) {
+    counter <- numeric(0)
+    for (k in 1:(length(r1_vec)-1)) {
+      if (r1_vec[k] == stateList[i] && r1_vec[k+1] == stateList[j]) {
+        counter <- append(counter, 1)
+      }
+      regime_1[i,j] <- sum(counter)
+    }
+  }
+}
+
+# Regime 2
+regime_2 <- matrix(data = NA, K, K)
+
+for (i in 1:K) {
+  for (j in 1:K) {
+    counter <- numeric(0)
+    for (k in 1:(length(r2_vec)-1)) {
+      if (r2_vec[k] == stateList[i] && r2_vec[k+1] == stateList[j]) {
+        counter <- append(counter, 1)
+      }
+      regime_2[i,j] <- sum(counter)
+    }
+  }
+}
+
+# Regime 3
+regime_3 <- matrix(data = NA, K, K)
+
+for (i in 1:K) {
+  for (j in 1:K) {
+    counter <- numeric(0)
+    for (k in 1:(length(r3_vec)-1)) {
+      if (r3_vec[k] == stateList[i] && r3_vec[k+1] == stateList[j]) {
+        counter <- append(counter, 1)
+      }
+      regime_3[i,j] <- sum(counter)
+    }
+  }
+}
+
+Gamma_array[1,,] <- round(regime_1/sum(regime_1),5)
+Gamma_array[2,,] <- round(regime_2/sum(regime_2),5)
+Gamma_array[3,,] <- round(regime_3/sum(regime_3),5)
+
+### Add small values for 0's
+for (i in 1:R) {
+  draw <- Gamma_array[i,,]
+  draw[draw == 0] <- 1e-6
+  Gamma_array[i,,] <- draw
+}
+```
+
+## EM Algorithm: (1) R1 = 2, (2) R = 4, (3) POS = 6
+```{r}
+EMR <- EM(paul_pos.list, R1, d1, N, pi_reg, A, Alpha, Gamma_array, stateList, 0.001, 50)
+saveRDS(EMR,"EMR.John2-R1.2-R2.1-9pos.rds")
+```
