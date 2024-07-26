@@ -24,6 +24,7 @@ for (i in 1:13) {
 
 # Sequence plot 
 ggplot(main_df, aes(x = Sentence, y = Book, fill = factor(ID))) +
+  ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus", subtitle = "R1 = 2, R2 = 1") +
   geom_tile(width = 1, height = 1) +
   scale_fill_manual(values = c("1" = "lightblue", "2" = "blue", "3" = "orange"))
 
@@ -47,6 +48,8 @@ for (i in 1:15) {
 
 # Sequence plot 
 ggplot(main_df.2, aes(x = Sentence, y = Book, fill = factor(ID))) +
+  ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus + Hebrews and 1 John", subtitle = "R1 = 2, R2 = 2") +
   geom_tile(width = 1, height = 1) +
   scale_fill_manual(values = c("1" = "lightblue", "2" = "blue", "3" = "orange", "4" ="gold4"))
+
 
