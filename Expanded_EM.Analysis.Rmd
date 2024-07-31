@@ -37,17 +37,33 @@ set.seed(1170) -- Acrhbishop Thomas Becket murdered
 set.seed(1688) -- Glorious Revolution
 
 # Results
-## Regime Assignments
-```{r}
-
-```
-
+## R1 = 1, R2 = 1
 ```{r}
 seeds <- factor(c(1215,1066,43,1415,587,1662,1660,1348,1611,1534,1588,
                   1704,1805,1697,2022,1741,1945,1707,1801,1556,
                   731,1605,1815,1170,1688))
 
 rds_files <- list.files(pattern="\\EMR")
+rds_list <- list()
+
+for (i in 1:length(rds_files)) {
+  rds_list[[i]] <- readRDS(rds_files[i])
+}
+
+df_bic <- numeric(0)
+
+for (i in 1:25) {
+  df_obj <- rds_list[[i]]
+  df_bic[i] <- df_obj$BIC
+}
+
+df_1.1 <- data.frame(Seed = seeds, BIC = df_bic)
+df_1.1[order(df_1.1$BIC, decreasing = F),]
+```
+
+## R1 = 2, R1 = 1
+```{r}
+rds_files <- list.files(pattern="\\EMR") # New directory
 rds_list <- list()
 
 for (i in 1:length(rds_files)) {
