@@ -84,7 +84,8 @@ for (i in 1:length(R1.1_R2.2)) {
 }
 
 BIC_mat[1,2] <- min(BIC_r1.1_r2.2)
-
+rownames(BIC_mat) <- c("R1.1", "R1.2", "R1.3")
+colnames(BIC_mat) <- c("R2.1", "R1.2")
 
 #### BIC Matrix: Hebrews + Johannine books ####
 BIC.HJ123_mat <- matrix(data = NA, ncol = 2, nrow = 3)
@@ -170,7 +171,8 @@ for (i in 1:length(R1.1_R2.2_HJ)) {
 }
 
 BIC.HJ123_mat[1,2] <- min(BIC_r1.1_r2.2_hj)
-
+rownames(BIC.HJ123_mat) <- c("R1.1", "R1.2", "R1.3")
+colnames(BIC.HJ123_mat) <- c("R2.1", "R1.2")
 ######## Use (R1 = 2, R2 = 1) for Pauline canon and for test books ########
 #### Build plots ####
 # Pauline corpus
@@ -263,7 +265,7 @@ for (i in 1:L) {
   
 }
 
-book_prop <- list()
+book_prop.HJ <- list()
 books <- c("Rom", "Cor.1", "Cor.2", "Gal", "Php", "Thes.1", "Phm", "Eph", 
            "Col", "Thes.2", "Tim.1", "Tim.2", "Tit",
            "Heb", "John.1", "John.2", "John.3")
@@ -276,14 +278,14 @@ for (i in 1:L) {
       book_total[k,j] <- sum(book_mat[,j] == k)
     }
   }
-  book_prop[[i]] <- t(book_total / 16)
-  colnames(book_prop[[i]]) <- factor(c("R1","R2","R3"))
-  rownames(book_prop[[i]]) <- c(1:N[i])
-  book_sub <- data.frame(book_prop[[i]])
+  book_prop.HJ[[i]] <- t(book_total / 16)
+  colnames(book_prop.HJ[[i]]) <- factor(c("R1","R2","R3"))
+  rownames(book_prop.HJ[[i]]) <- c(1:N[i])
+  book_sub <- data.frame(book_prop.HJ[[i]])
   book_sub <- book_sub %>%
     mutate(Book = factor(rep(books[i],N[i]))) %>%
     mutate(Sentence = 1:N[i]) %>%
     relocate(Book, .before = R1) %>%
     relocate(Sentence, .before = R1)
-  book_prop[[i]] <- book_sub
+  book_prop.HJ[[i]] <- book_sub
 }
