@@ -1,10 +1,12 @@
 library(ggplot2)
 
+setwd("C:/Users/jleinba/Documents/ASOR/ASOR_Thesis/Results/R1.2_R2.1")
 rds_2.1 <- readRDS("EMR-R1.2-R2.1_731.rds") # 1611 second-lowest
 id <- rds_2.1$id
 
-rds.HJ_2.1 <- readRDS("EMR.HJ123-R1.2-R2.1-1611.rds")
-id.HJ <- rds.HJ1_2.1$id
+setwd("C:/Users/jleinba/Documents/ASOR/ASOR_Thesis/Results/HJ123_R1.2_R2.1")
+rds.HJ_2.1 <- readRDS("EMR.HJ123-R1.2-R2.1-1348.rds") # 1707 second-lowest
+id.HJ <- rds.HJ_2.1$id
 
 ### Baseline for 13 book Pauline Corpus ###
 N <- numeric(13)
@@ -24,7 +26,7 @@ for (i in 1:13) {
 
 # Sequence plot 
 ggplot(main_df, aes(x = Sentence, y = Book, fill = factor(ID))) +
-  ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus", subtitle = "R1 = 2, R2 = 1") +
+  ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus", subtitle = "R1 = 2, R2 = 1. BIC = 118,855.6") +
   geom_tile(width = 1, height = 1) +
   scale_fill_manual(values = c("1" = "lightblue", "2" = "blue", "3" = "orange"))
 
@@ -55,9 +57,24 @@ ggplot(main_df.2, aes(x = Sentence, y = Book, fill = factor(ID))) +
 
 ### Cumulative average sequence plots ###
 library(tidyr)
-Tim.1_long <- book_prop[[11]][,-1] %>%
+# 1 Timothy
+Tim.1_long <- book_prop.HJ[[11]][,-1] %>%
   gather(key = "Regime", value = "Prop", -Sentence)
 
-ggplot(test_plot.long, aes(x = Sentence, y = Prop, fill = Regime)) +
+Tim.1_long$Regime <- factor(Tim.1_long$Regime, levels = c("R3", "R2", "R1"))
+
+ggplot(Tim.1_long, aes(x = Sentence, y = Prop, fill = Regime)) +
   geom_col(position = "fill") + 
-  scale_y_continuous(labels = scales::percent)
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "1 Timothy (13 Book Pauline Corpus + Hebrews and Johannine Letters)")
+
+# Ephesians
+Eph_long <- book_prop.HJ[[8]][,-1] %>%
+  gather(key = "Regime", value = "Prop", -Sentence)
+
+Eph_long$Regime <- factor(Eph_long$Regime, levels = c("R3", "R2", "R1"))
+
+ggplot(Eph_long, aes(x = Sentence, y = Prop, fill = Regime)) +
+  geom_col(position = "fill") + 
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "Ephesians (13 Book Pauline Corpus + Hebrews and Johannine letters)")
