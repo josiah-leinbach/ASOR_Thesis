@@ -289,3 +289,19 @@ for (i in 1:L) {
     relocate(Sentence, .before = R1)
   book_prop.HJ[[i]] <- book_sub
 }
+
+#### Account for ambiguous sentences ####
+sent_array.2 <- list()
+for (i in 1:L) {
+  sent_mat <- data.frame(matrix(0, nrow = N[i], ncol = 4))
+  for (j in 1:25) {
+    rds <- readRDS(R1.2_R2.1[j])
+    em_gamma <- rds$gamma
+    gamma_book <- em_gamma[i,1:N[i],]
+    gamma_prop <- gamma_book > 0.7
+    am_vec <- apply(gamma_prop, MARGIN = 1, sum) == 0
+    result_vec <- data.frame(cbind(gamma_prop, am_vec))
+    sent_mat <- sent_mat + result_vec
+  }
+  sent_array.2[[i]] <- sent_mat
+}
