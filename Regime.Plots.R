@@ -55,26 +55,26 @@ ggplot(main_df.2, aes(x = Sentence, y = Book, fill = factor(ID))) +
   scale_fill_manual(values = c("1" = "lightblue", "2" = "blue", "3" = "orange", "4" ="gold4"))
 
 
-### Cumulative average sequence plots ###
+### Cumulative classification sequence plots ###
 library(tidyr)
 # 1 Timothy
-Tim.1_long <- book_prop.HJ[[11]][,-1] %>%
+Tim.1_long <- sent_array.2[[11]][,-1] %>%
   gather(key = "Regime", value = "Prop", -Sentence)
 
-Tim.1_long$Regime <- factor(Tim.1_long$Regime, levels = c("R3", "R2", "R1"))
+Tim.1_long$Regime <- factor(Tim.1_long$Regime, levels = c("Amb", "R3", "R2", "R1"))
 
 ggplot(Tim.1_long, aes(x = Sentence, y = Prop, fill = Regime)) +
   geom_col(position = "fill") + 
   scale_y_continuous(labels = scales::percent) +
-  labs(title = "1 Timothy (13 Book Pauline Corpus + Hebrews and Johannine Letters)")
+  labs(title = "1 Timothy (13 Book Pauline Corpus)")
 
 # Ephesians
-Eph_long <- book_prop.HJ[[8]][,-1] %>%
+Eph_long <- sent_array.2[[8]][,-1] %>%
   gather(key = "Regime", value = "Prop", -Sentence)
 
-Eph_long$Regime <- factor(Eph_long$Regime, levels = c("R3", "R2", "R1"))
+Eph_long$Regime <- factor(Eph_long$Regime, levels = c("Amb", "R3", "R2", "R1"))
 
 ggplot(Eph_long, aes(x = Sentence, y = Prop, fill = Regime)) +
   geom_col(position = "fill") + 
   scale_y_continuous(labels = scales::percent) +
-  labs(title = "Ephesians (13 Book Pauline Corpus + Hebrews and Johannine letters)")
+  labs(title = "Ephesians (13 Book Pauline Corpus)")
