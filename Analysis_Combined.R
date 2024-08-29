@@ -303,5 +303,11 @@ for (i in 1:L) {
     result_vec <- data.frame(cbind(gamma_prop, am_vec))
     sent_mat <- sent_mat + result_vec
   }
+  colnames(sent_mat) <- c("R1", "R2", "R3", "Amb")
+  sent_mat <- sent_mat %>%
+    mutate(Book = factor(rep(books[i], N[i]))) %>%
+    mutate(Sentence = 1:N[i]) %>%
+    relocate(Book, .before = R1) %>%
+    relocate(Sentence, .before = R1)
   sent_array.2[[i]] <- sent_mat
 }
