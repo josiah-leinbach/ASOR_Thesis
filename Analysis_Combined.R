@@ -178,7 +178,7 @@ colnames(BIC.HJ123_mat) <- c("R2.1", "R1.2")
 # Pauline corpus
 
 setwd("C:/Users/jleinba/Documents/ASOR/ASOR_Thesis/Results/R1.2_R2.1")
-R1.2_R2.1 <- list.files("C:/Users/jleinba/Documents/ASOR/ASOR_Thesis/Results/R1.2_R2.1","EMR")
+R1.2_R2.1 <- list.files("C:/Users/jleinba/Documents/ASOR_Thesis/Results/6-POS/R1.2-R2.1/EPS_10e-6","EMR")
 
 L <- 13
 N <- numeric(0)
