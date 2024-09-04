@@ -17,7 +17,7 @@ source("/Users/josiahleinbach/Documents/ASOR_Thesis/R_files/hmm-paul.R")
 ```{r}
 paul_pos.list <- readRDS("paul_6pos-HJ123.rds")
 
-seed.list <- c(1066,1170,1215,1348,1415,1534,1556,1588,
+seed.list <- c(43,597,731,1066,1170,1215,1348,1415,1534,1556,1588,
                1605,1611,1660,1662,1688,1697,1704,1707,
                1741,1801,1805,1815,1945,2022)
 
