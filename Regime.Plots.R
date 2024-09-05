@@ -19,14 +19,26 @@ amb_func <- function(x) {
     z <- as.character("1_2") # 1 and 2
   } else if (y[1] == 2 & y[2] == 1) {
     z <- as.character("1_2")
-  } else if (y[1] == 2 & y[2] == 3) {
-    z <- as.character("2_3") # 2 and 3
-  } else if (y[1] == 3 & y[2] == 2) {
-    z <- as.character("2_3")
   } else if (y[1] == 1 & y[2] == 3) {
     z <- as.character("1_3") # 1 and 3
-  } else {
+  } else if (y[1] == 3 & y[2] == 1) {
     z <- as.character("1_3")
+  } else if (y[1] == 1 & y[2] == 4) {
+    z <- as.character("1_4") # 1 and 4
+  } else if (y[1] == 4 & y[2] == 1){
+    z <- as.character("1_4")
+  } else if (y[1] == 2 & y[2] == 3){
+    z <- as.character("2_3") # 2 and 3
+  } else if (y[1] == 3 & y[2] == 2){
+    z <- as.character("2_3")
+  } else if (y[1] == 2 & y[2] == 4){
+    z <- as.character("2_4") # 2 and 4
+  } else if (y[1] == 4 & y[2] == 2){
+    z <- as.character("2_4")
+  } else if (y[1] == 3 & y[2] == 4){
+    z <- as.character("3_4") # 3 and 4
+  } else if (y[1] == 4 & y[2] == 3){
+    z <- as.character("3_4")
   }
   return(z)
 }
@@ -38,7 +50,7 @@ for (i in 1:13) {
 
 for (w in 1:25) {
   main_df <- data.frame()
-  rds <- readRDS(R1.2_R2.1[w])
+  rds <- readRDS("EMR-R1.2-R2.2_NEW_731.rds")
   rds_gamma <- rds$gamma
   for (i in 1:13) {
     gamma_book <- round(rds_gamma[i,1:N[i],],2)
@@ -50,7 +62,7 @@ for (w in 1:25) {
     main_df.sub <- data.frame(Book = book_vec, Sentence = sent_vec, ID = results_vec)
     main_df <- rbind(main_df, main_df.sub)
   }
-  assign(paste0("Seed_",file.num[w]), main_df)
+  assign("Seed_731", main_df)
   prop_amb[w] <- length(which(main_df$ID == "1_2" |
                                 main_df$ID == "2_3" |
                                 main_df$ID == "1_3")) / sum(N)
@@ -81,29 +93,17 @@ summary(lm(Prop_Amb ~ BIC, data = bic_df[-c(11,12,20)])) # Removing high leverag
 
 # Sequence plots
 R1.2_R2.1[order(BIC_r1.2_r2.1)] # Find order of BIC
-ggplot(Seed_731, aes(x = Sentence, y = Book, fill = factor(ID))) +
-  ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus", 
-          subtitle = paste0("Seed_", file.num[25], "(", "BIC = ", BIC_r1.2_r2.1[25], ")")) +
-  geom_tile(width = 1, height = 1) +
-  scale_fill_manual(values = c("1" = "lightblue", "2" = "blue", 
-                               "3" = "orange", "1_2" = "forestgreen",
-                               "1_3" = "yellow", "2_3" = "violet"))
-
-ggplot(Seed_1697, aes(x = Sentence, y = Book, fill = factor(ID))) +
-  ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus", 
-          subtitle = paste0("Seed_", file.num[13], "(", "BIC = ", BIC_r1.2_r2.1[14], ")")) +
-  geom_tile(width = 1, height = 1) +
-  scale_fill_manual(values = c("1" = "lightblue", "2" = "blue", 
-                               "3" = "orange", "1_2" = "forestgreen",
-                               "1_3" = "yellow", "2_3" = "violet"))
-
 ggplot(Seed_43, aes(x = Sentence, y = Book, fill = factor(ID))) +
-  ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus", 
-          subtitle = paste0("Seed_", file.num[12], "(", "BIC = ", BIC_r1.2_r2.1[15], ")")) +
-  geom_tile(width = 1, height = 1) +
-  scale_fill_manual(values = c("1" = "lightblue", "2" = "blue", 
-                               "3" = "orange", "1_2" = "forestgreen",
-                               "1_3" = "yellow", "2_3" = "violet"))
+  ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus") + 
+  geom_tile(width = 1, height = 1)
+
+ggplot(Seed_597, aes(x = Sentence, y = Book, fill = factor(ID))) +
+  ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus") +
+  geom_tile(width = 1, height = 1)
+
+ggplot(Seed_731, aes(x = Sentence, y = Book, fill = factor(ID))) +
+  ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus") +
+  geom_tile(width = 1, height = 1)
 
 
 ### Cumulative classification sequence plots ###
