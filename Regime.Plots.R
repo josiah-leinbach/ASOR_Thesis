@@ -92,21 +92,24 @@ for (i in 1:13) {
 # Sequence plots
 R1.2_R2.2[order(BIC_r1.2_r2.2)] # Find order of BIC
 ggplot(Seed_1660, aes(x = Sentence, y = Book, fill = factor(ID))) +
-  ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus") + 
+  ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus",
+          subtitle = paste0("BIC = ", BIC_r1.2_r2.2[13])) + 
   geom_tile(width = 1, height = 1) + 
   scale_fill_manual(values = c("1" = "blue", "2" = "lightblue", "1_2" = "dodgerblue",
                                "1_3" = "violet", "1_4" = "maroon2", "2_3" = "pink",
                                "2_4" = "purple", "3" = "orange", "3_4" = "forestgreen", "4" = "red"))
 
 ggplot(Seed_1741, aes(x = Sentence, y = Book, fill = factor(ID))) +
-  ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus") +
+  ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus",
+          subtitle = paste0("BIC = ", BIC_r1.2_r2.2[1])) +
   geom_tile(width = 1, height = 1) +
   scale_fill_manual(values = c("1" = "blue", "2" = "lightblue", "1_2" = "dodgerblue",
                                "1_3" = "violet", "1_4" = "maroon2", "2_3" = "pink",
                                "2_4" = "purple", "3" = "orange", "3_4" = "forestgreen", "4" = "red"))
 
 ggplot(Seed_597, aes(x = Sentence, y = Book, fill = factor(ID))) +
-  ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus") +
+  ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus",
+          subtitle = paste0("BIC = ", BIC_r1.2_r2.2[24])) +
   geom_tile(width = 1, height = 1) + 
   geom_tile(width = 1, height = 1) +
   scale_fill_manual(values = c("1" = "blue", "2" = "lightblue", "1_2" = "dodgerblue",
