@@ -2,7 +2,11 @@
 ## Analysis Files
 Contains set up for running one iteration of the EM algorithm at a specific seed (1066) for up to R1 + R2 = 6. Can be formatted to loop through seed-list, as found in Analysis Files in Results folders.
 ## Results
-Results for combinations R1-R2. Unnested folders (e.g. R1.1_R2.1) contain results for 9 POS. Files containing **HJ123** include Hebrews + 1, 2, 3 John. *Folder* named **9-POS** contains only initial solo runs (i.e. single-shot) for R1-R2 combinations on d1 = 7, plus some d1 = 10 variations. Folder **6-POS** contains results for 6-POS R1-R2 on 13 book corpus. 13 book corpus + Hebrews + 1, 2, 3 John on 6-POS (R1 = 2, R2 = 1) found in Results/HJ123_R1.2-R2.1/EPS_10e-6.
+Results for combinations R1-R2. Unnested folders (e.g. R1.1_R2.1) contain results for 9 POS. Files containing **HJ123** include Hebrews + 1, 2, 3 John. 
+
+*Folder* named **9-POS** contains only initial solo runs (i.e. single-shot) for R1-R2 combinations on d1 = 7, plus some d1 = 10 variations. 
+
+Folder **6-POS** contains results for 6-POS R1-R2 on 13 book corpus. 13 book corpus + Hebrews + 1, 2, 3 John on 6-POS (R1 = 2, R2 = 1) found in Results/HJ123_R1.2-R2.1/EPS_10e-6.
 
 **Result file nomenclature** (e.g. EMR.HJ123-R1.2-R2.1_NEW_1066.rds)
 1. EMR - EM algorithm
