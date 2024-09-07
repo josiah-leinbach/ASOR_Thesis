@@ -2,8 +2,8 @@ library(ggplot2)
 
 R1.2_R2.2 <- list.files("C:/Users/jleinba/Documents/ASOR_Thesis/Results/6-POS/R1.2-R2.2/EPS_10e-6","EMR")
 setwd("C:/Users/jleinba/Documents/ASOR_Thesis/Results/6-POS/R1.2-R2.2/EPS_10e-6")
-N <- c(331, 377, 174, 110, 55, 50, 10, 55, 39, 25, 61, 46, 27)
-books <- c("Rom", "Cor.1", "Cor.2", "Gal", "Php", "Thes.1", "Phm", "Eph", "Col", "Thes.2", "Tim.1", "Tim.2", "Tit")
+N <- c(331, 377, 174, 110, 55, 50, 10, 55, 39, 25, 61, 46, 27) # (164, 96, 10, 15) for Hebrews + 1, 2, 3 John
+books <- c("Rom", "Cor.1", "Cor.2", "Gal", "Php", "Thes.1", "Phm", "Eph", "Col", "Thes.2", "Tim.1", "Tim.2", "Tit") # "Heb", "John.1", "John.2", "John.3"
 
 BIC_r1.2_r2.2 <- numeric()
 for (i in 1:25) {
@@ -48,8 +48,8 @@ amb_func <- function(x) {
   return(z)
 }
 
-book_long <- numeric(13)
-for (i in 1:13) {
+book_long <- numeric(13) # 17
+for (i in 1:13) { # 17
   book_long[i] <- paste0(books[i],".","long")
 }
 
@@ -57,7 +57,7 @@ for (w in 1:25) {
   main_df <- data.frame()
   rds <- readRDS(R1.2_R2.2[w])
   rds_gamma <- rds$gamma
-  for (i in 1:13) {
+  for (i in 1:13) { # 17 for additional books
     gamma_book <- round(rds_gamma[i,1:N[i],],2)
     gamma_prob <- gamma_book > 0.7
     gamma_order <- t(apply(gamma_book, MARGIN = 1, FUN = order))
@@ -72,11 +72,11 @@ for (w in 1:25) {
                                               "3", "3_4", "4"))
   main_df$Book <- factor(main_df$Book, levels = c("Tit","Tim.2","Tim.1","Eph","Col",
                              "Thes.2","Rom","Cor.1","Cor.2","Gal",
-                             "Php", "Thes.1", "Phm"))
+                             "Php", "Thes.1", "Phm")) # "Heb", "John.1", "John.2", "John.3"
   assign(paste0("Seed_", file.num[w]), main_df)
 }
 
-for (i in 1:13) {
+for (i in 1:13) { # 17 for additional books
   book_df <- data.frame()
   for (j in 1:25) {
     rds <- readRDS(R1.2_R2.2[j])
