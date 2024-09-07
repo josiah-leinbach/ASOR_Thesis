@@ -7,7 +7,7 @@ file.order <- c(1741,1801,1066,1170,1215,1348,1415,1534,1556,1558,1605,
 install.packages("MixSim")
 library(MixSim)
 
-N <- c(331, 377, 174, 110, 55, 50, 10, 55, 39, 25, 61, 46, 27)
+N <- c(331, 377, 174, 110, 55, 50, 10, 55, 39, 25, 61, 46, 27) # (164, 96, 10, 15) for Hebrews + 1, 2, 3 John
 
 id_df <- data.frame(matrix(NA, ncol = length(file.names), nrow = sum(N)))
 for (i in 1:25) {
