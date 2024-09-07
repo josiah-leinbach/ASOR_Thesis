@@ -2,8 +2,8 @@ library(ggplot2)
 
 R1.2_R2.2 <- list.files("C:/Users/jleinba/Documents/ASOR_Thesis/Results/6-POS/R1.2-R2.2/EPS_10e-6","EMR")
 setwd("C:/Users/jleinba/Documents/ASOR_Thesis/Results/6-POS/R1.2-R2.2/EPS_10e-6")
-N <- c(331, 377, 174, 110, 55, 50, 10, 55, 39, 25, 61, 46, 27)
-books <- c("Rom", "Cor.1", "Cor.2", "Gal", "Php", "Thes.1", "Phm", "Eph", "Col", "Thes.2", "Tim.1", "Tim.2", "Tit")
+N <- c(331, 377, 174, 110, 55, 50, 10, 55, 39, 25, 61, 46, 27) # (164, 96, 10, 15) for Hebrews + 1, 2, 3 John
+books <- c("Rom", "Cor.1", "Cor.2", "Gal", "Php", "Thes.1", "Phm", "Eph", "Col", "Thes.2", "Tim.1", "Tim.2", "Tit") # "Heb", "John.1", "John.2", "John.3"
 
 BIC_r1.2_r2.2 <- numeric()
 for (i in 1:25) {
