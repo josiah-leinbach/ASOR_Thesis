@@ -1,6 +1,7 @@
 library(ggplot2)
 
-R1.2_R2.2 <- list.files("C:/Users/jleinba/Documents/ASOR/ASOR_Thesis/Results/6-POS/R1.2-R2.2/EPS_10e-6","EMR")
+R1.2_R2.2 <- list.files("C:/Users/jleinba/Documents/ASOR_Thesis/Results/6-POS/R1.2-R2.2/EPS_10e-6","EMR")
+setwd("C:/Users/jleinba/Documents/ASOR_Thesis/Results/6-POS/R1.2-R2.2/EPS_10e-6")
 N <- c(331, 377, 174, 110, 55, 50, 10, 55, 39, 25, 61, 46, 27)
 books <- c("Rom", "Cor.1", "Cor.2", "Gal", "Php", "Thes.1", "Phm", "Eph", "Col", "Thes.2", "Tim.1", "Tim.2", "Tit")
 
@@ -54,7 +55,7 @@ for (i in 1:13) {
 
 for (w in 1:25) {
   main_df <- data.frame()
-  rds <- readRDS(file.names[w])
+  rds <- readRDS(R1.2_R2.2[w])
   rds_gamma <- rds$gamma
   for (i in 1:13) {
     gamma_book <- round(rds_gamma[i,1:N[i],],2)
@@ -69,13 +70,16 @@ for (w in 1:25) {
   main_df$ID <- factor(main_df$ID, levels = c("1", "1_2", "2",
                                               "1_3", "1_4", "2_3", "2_4", 
                                               "3", "3_4", "4"))
+  main_df$Book <- factor(main_df$Book, levels = c("Tit","Tim.2","Tim.1","Eph","Col",
+                             "Thes.2","Rom","Cor.1","Cor.2","Gal",
+                             "Php", "Thes.1", "Phm"))
   assign(paste0("Seed_", file.num[w]), main_df)
 }
 
 for (i in 1:13) {
   book_df <- data.frame()
   for (j in 1:25) {
-    rds <- readRDS(R1.2_R2.1[j])
+    rds <- readRDS(R1.2_R2.2[j])
     rds_gamma <- rds$gamma
     gamma_book <- round(rds_gamma[i,1:N[i],],2)
     gamma_prob <- gamma_book > 0.7
