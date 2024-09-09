@@ -9,9 +9,15 @@ library(MixSim)
 
 N <- c(331, 377, 174, 110, 55, 50, 10, 55, 39, 25, 61, 46, 27) # (164, 96, 10, 15) for Hebrews + 1, 2, 3 John
 
+BIC_r1.2_r2.2 <- numeric()
+for (i in 1:25) {
+  rds <- readRDS(R1.2_R2.2[i])
+  BIC_r1.2_r2.2[i] <- round(rds$BIC,2)
+}
+
 id_df <- data.frame(matrix(NA, ncol = length(file.names), nrow = sum(N)))
 for (i in 1:25) {
-  rds <- readRDS(file.names[i])
+  rds <- readRDS(file.names[order(BIC_r1.2_r2.2)][i])
   ids <- rds$id
   vec_iter <- numeric()
   for (j in 1:13) {
@@ -21,25 +27,11 @@ for (i in 1:25) {
   id_df[,i] <- vec_iter
 }
 
-combinations <- combn(1:25, 2)
+RI <- data.frame(matrix(NA, ncol = 25, nrow = 25), row.names = file.order[order(BIC_r1.2_r2.2)])
 
-RI <- numeric()
-
-for (i in 1:300) {
-  RI[i] <- RandIndex(id_df[,combinations[1,i]], id_df[,combinations[2,i]])$AR
+for (i in 1:25) {
+  for (j in 1:25) {
+    RI[i,j] <- round(RandIndex(id_df[,i], id_df[,j])$AR, 3)
+  }
 }
-
-best_ri <- combinations[,order(RI, decreasing = T)[1:5]]
-
-ri_tables <- list(5)
-for (i in 1:5) {
-  ri_tables[i] <- paste0("RI.",i,".","_",file.order[best_ri[1,i]],".",file.order[best_ri[2,i]])
-}
-
-for (i in 1:5) {
-  t1t2 <- data.frame(table(id_df[,best_ri[1,i]], id_df[,best_ri[2,i]]))
-  ri_tables[[i]] <- t1t2
-  names(ri_tables)[i] <- paste0("RI.",i,".","_",file.order[best_ri[1,i]],".",file.order[best_ri[2,i]])
-}
-
-saveRDS(ri_tables, "RI_tables")
+colnames(RI) <- file.order[order(BIC_r1.2_r2.2)]
