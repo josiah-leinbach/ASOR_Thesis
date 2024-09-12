@@ -1,9 +1,10 @@
 library(ggplot2)
 
-R1.2_R2.2 <- list.files("C:/Users/jleinba/Documents/ASOR_Thesis/Results/6-POS/R1.2-R2.2/EPS_10e-6","EMR")
-setwd("C:/Users/jleinba/Documents/ASOR_Thesis/Results/6-POS/R1.2-R2.2/EPS_10e-6")
-N <- c(331, 377, 174, 110, 55, 50, 10, 55, 39, 25, 61, 46, 27) # (164, 96, 10, 15) for Hebrews + 1, 2, 3 John
-books <- c("Rom", "Cor.1", "Cor.2", "Gal", "Php", "Thes.1", "Phm", "Eph", "Col", "Thes.2", "Tim.1", "Tim.2", "Tit") # "Heb", "John.1", "John.2", "John.3"
+R1.2_R2.2 <- list.files("C:/Users/jleinba/Documents/ASOR_Thesis/Results/HJ123_R1.2-R2.1/EPS_10e-6","EMR") #"C:/Users/jleinba/Documents/ASOR_Thesis/Results/HJ123_R1.2-R2.2/EPS_10e-6"
+setwd("C:/Users/jleinba/Documents/ASOR_Thesis/Results/HJ123_R1.2-R2.1/EPS_10e-6")
+N <- c(331, 377, 174, 110, 55, 50, 10, 55, 39, 25, 61, 46, 27,164, 96, 10, 15) # for Hebrews + 1, 2, 3 John
+books <- c("Rom", "Cor.1", "Cor.2", "Gal", "Php", "Thes.1", "Phm", "Eph", "Col", "Thes.2", "Tim.1", "Tim.2", "Tit",
+           "Heb", "John.1", "John.2", "John.3")
 
 BIC_r1.2_r2.2 <- numeric()
 for (i in 1:25) {
@@ -57,7 +58,7 @@ for (w in 1:25) {
   main_df <- data.frame()
   rds <- readRDS(R1.2_R2.2[w])
   rds_gamma <- rds$gamma
-  for (i in 1:13) { # 17 for additional books
+  for (i in 1:17) { # 17 for additional books
     gamma_book <- round(rds_gamma[i,1:N[i],],2)
     gamma_prob <- gamma_book > 0.7
     gamma_order <- t(apply(gamma_book, MARGIN = 1, FUN = order))
@@ -70,9 +71,10 @@ for (w in 1:25) {
   main_df$ID <- factor(main_df$ID, levels = c("1", "1_2", "2",
                                               "1_3", "1_4", "2_3", "2_4", 
                                               "3", "3_4", "4"))
-  main_df$Book <- factor(main_df$Book, levels = c("Tit","Tim.2","Tim.1","Eph","Col",
-                             "Thes.2","Rom","Cor.1","Cor.2","Gal",
-                             "Php", "Thes.1", "Phm")) # "Heb", "John.1", "John.2", "John.3"
+  main_df$Book <- factor(main_df$Book, levels = c("John.3", "John.2", "John.1", "Heb",
+    "Tim.2","Tim.1","Tit","Eph","Col",
+    "Thes.2","Phm","Php","Rom","Cor.2",
+    "Cor.1", "Thes.1", "Gal"))
   assign(paste0("Seed_", file.num[w]), main_df)
 }
 
@@ -93,8 +95,31 @@ for (i in 1:13) { # 17 for additional books
   assign(book_long[i], book_df)
 }
 
-# Sequence plots\
 
+#### ID assignments: absolute ####
+for (i in 1:25) {
+  rds <- readRDS(R1.2_R2.2[i])
+  ids <- rds$id
+  main_df <- data.frame()
+  for (j in 1:17) { # 17
+    sent_vec <- c(1:N[j])
+    id_vec <- ids[j,1:N[j]]
+    book_vec <- rep(books[j],N[j])
+    main_df.sub <- data.frame(Book = book_vec, Sentence = sent_vec, ID = id_vec)
+    main_df <- rbind(main_df, main_df.sub)
+  }
+  main_df$ID <- factor(main_df$ID, levels = c("1", "1_2", "2",
+                                              "1_3", "1_4", "2_3", "2_4", 
+                                              "3", "3_4", "4"))
+  main_df$Book <- factor(main_df$Book, levels = c("John.3", "John.2", "John.1", "Heb",
+                                                  "Tim.2","Tim.1","Tit","Eph","Col",
+                                                  "Thes.2","Phm","Php","Rom","Cor.2",
+                                                  "Cor.1", "Thes.1", "Gal"))
+  assign(paste0("Seed_", file.num[i]), main_df)
+}
+
+################## Sequence plots ################## 
+#### R1.2_R2.1
 R1.2_R2.2[order(BIC_r1.2_r2.2)] # Find order of BIC
 ggplot(Seed_731, aes(x = Sentence, y = Book, fill = factor(ID))) +
   ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus",
@@ -104,23 +129,90 @@ ggplot(Seed_731, aes(x = Sentence, y = Book, fill = factor(ID))) +
                                "1_3" = "violet", "1_4" = "maroon2", "2_3" = "pink",
                                "2_4" = "purple", "3" = "orange", "3_4" = "forestgreen", "4" = "red"))
 
-ggplot(Seed_1707, aes(x = Sentence, y = Book, fill = factor(ID))) +
+ggplot(Seed_1697, aes(x = Sentence, y = Book, fill = factor(ID))) +
   ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus",
-          subtitle = paste0("BIC = ", BIC_r1.2_r2.2[1])) +
+          subtitle = paste0("BIC = ", BIC_r1.2_r2.2[14])) +
   geom_tile(width = 1, height = 1) +
   scale_fill_manual(values = c("1" = "blue", "2" = "lightblue", "1_2" = "dodgerblue",
                                "1_3" = "violet", "1_4" = "maroon2", "2_3" = "pink",
                                "2_4" = "purple", "3" = "orange", "3_4" = "forestgreen", "4" = "red"))
 
-ggplot(Seed_1815, aes(x = Sentence, y = Book, fill = factor(ID))) +
+ggplot(Seed_1215, aes(x = Sentence, y = Book, fill = factor(ID))) +
   ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus",
-          subtitle = paste0("BIC = ", BIC_r1.2_r2.2[24])) +
+          subtitle = paste0("BIC = ", BIC_r1.2_r2.2[3])) +
   geom_tile(width = 1, height = 1) + 
   geom_tile(width = 1, height = 1) +
   scale_fill_manual(values = c("1" = "blue", "2" = "lightblue", "1_2" = "dodgerblue",
                                "1_3" = "violet", "1_4" = "maroon2", "2_3" = "pink",
                                "2_4" = "purple", "3" = "orange", "3_4" = "forestgreen", "4" = "red"))
 
+
+#### R1.2_R2.2
+R1.2_R2.2[order(BIC_r1.2_r2.2)] # Find order of BIC
+ggplot(Seed_1660, aes(x = Sentence, y = Book, fill = factor(ID))) +
+  ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus",
+          subtitle = paste0("BIC = ", BIC_r1.2_r2.2[11])) +
+  geom_tile(width = 1, height = 1) + 
+  scale_fill_manual(values = c("1" = "blue", "2" = "lightblue", "1_2" = "dodgerblue",
+                               "1_3" = "violet", "1_4" = "maroon2", "2_3" = "pink",
+                               "2_4" = "purple", "3" = "orange", "3_4" = "forestgreen", "4" = "red"))
+
+ggplot(Seed_1741, aes(x = Sentence, y = Book, fill = factor(ID))) +
+  ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus",
+          subtitle = paste0("BIC = ", BIC_r1.2_r2.2[17])) +
+  geom_tile(width = 1, height = 1) +
+  scale_fill_manual(values = c("1" = "blue", "2" = "lightblue", "1_2" = "dodgerblue",
+                               "1_3" = "violet", "1_4" = "maroon2", "2_3" = "pink",
+                               "2_4" = "purple", "3" = "orange", "3_4" = "forestgreen", "4" = "red"))
+
+ggplot(Seed_1605, aes(x = Sentence, y = Book, fill = factor(ID))) +
+  ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus",
+          subtitle = paste0("BIC = ", BIC_r1.2_r2.2[9])) +
+  geom_tile(width = 1, height = 1) + 
+  geom_tile(width = 1, height = 1) +
+  scale_fill_manual(values = c("1" = "blue", "2" = "lightblue", "1_2" = "dodgerblue",
+                               "1_3" = "violet", "1_4" = "maroon2", "2_3" = "pink",
+                               "2_4" = "purple", "3" = "orange", "3_4" = "forestgreen", "4" = "red"))
+
+
+#### R1.2_R2.2 HJ
+R1.2_R2.2[order(BIC_r1.2_r2.2)]
+order(BIC_r1.2_r2.2)# Find order of BIC
+ggplot(Seed_1741, aes(x = Sentence, y = Book, fill = factor(ID))) +
+  ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus + Hebrews and 1, 2, 3 John",
+          subtitle = paste0("BIC = ", BIC_r1.2_r2.2[17])) +
+  geom_tile(width = 1, height = 1) + 
+  scale_fill_manual(values = c("1" = "blue", "2" = "lightblue", "1_2" = "dodgerblue",
+                               "1_3" = "violet", "1_4" = "maroon2", "2_3" = "pink",
+                               "2_4" = "purple", "3" = "orange", "3_4" = "forestgreen", "4" = "red"))
+
+ggplot(Seed_1534, aes(x = Sentence, y = Book, fill = factor(ID))) +
+  ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus",
+          subtitle = paste0("BIC = ", BIC_r1.2_r2.2[6])) +
+  geom_tile(width = 1, height = 1) +
+  scale_fill_manual(values = c("1" = "blue", "2" = "lightblue", "1_2" = "dodgerblue",
+                               "1_3" = "violet", "1_4" = "maroon2", "2_3" = "pink",
+                               "2_4" = "purple", "3" = "orange", "3_4" = "forestgreen", "4" = "red"))
+
+#### R1.2_R2.1 HJ
+R1.2_R2.2[order(BIC_r1.2_r2.2)]
+order(BIC_r1.2_r2.2)# Find order of BIC
+BIC_r1.2_r2.2[order(BIC_r1.2_r2.2)]
+ggplot(Seed_1707, aes(x = Sentence, y = Book, fill = factor(ID))) +
+  ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus + Hebrews and 1, 2, 3 John",
+          subtitle = paste0("BIC = ", BIC_r1.2_r2.2[16])) +
+  geom_tile(width = 1, height = 1) + 
+  scale_fill_manual(values = c("1" = "blue", "2" = "lightblue", "1_2" = "dodgerblue",
+                               "1_3" = "violet", "1_4" = "maroon2", "2_3" = "pink",
+                               "2_4" = "purple", "3" = "orange", "3_4" = "forestgreen", "4" = "red"))
+
+ggplot(Seed_1611, aes(x = Sentence, y = Book, fill = factor(ID))) +
+  ggtitle("Regime Distributions for 13 Book Claimed Pauline Corpus + Hebrews and 1, 2, 3 John",
+          subtitle = paste0("BIC = ", BIC_r1.2_r2.2[8])) +
+  geom_tile(width = 1, height = 1) +
+  scale_fill_manual(values = c("1" = "blue", "2" = "lightblue", "1_2" = "dodgerblue",
+                               "1_3" = "violet", "1_4" = "maroon2", "2_3" = "pink",
+                               "2_4" = "purple", "3" = "orange", "3_4" = "forestgreen", "4" = "red"))
 
 ### Cumulative classification sequence plots ###
 library(tidyr)
