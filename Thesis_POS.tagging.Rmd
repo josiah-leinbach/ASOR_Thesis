@@ -89,6 +89,7 @@ book.list <- c(Col_s, Cor1_s, Cor2_s, Eph_s, Gal_s,
 
 Original <- c("A","C","D","I","N","P","RA","RD","RI","RP","RR","V","X")
 Combined <- c("A","C","D","I","N","X","RA","P","P","P","P","V","I") # Reduced to 6: AD, I, N, P, A, V 
+# Combined_2 <- c("A","C","D","I","N","X","RA","P","P","P","P","V","I")
 
 for (i in 1:length(filenames.2)) {
   csv.file <- read.csv(filenames.2[i])
