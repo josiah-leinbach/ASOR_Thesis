@@ -298,7 +298,7 @@ for (i in 1:L) {
   r1 <- append(r1, book[r.mn_id[i,1:length(paul_pos.list[[i]])] == 1])
   r2 <- append(r2, book[r.mn_id[i,1:length(paul_pos.list[[i]])] == 2])
   r3 <- append(r3, book[r.mn_id[i,1:length(paul_pos.list[[i]])] == 3])
-  r4 <- append(r3, book[r.mn_id[i,1:length(paul_pos.list[[i]])] == 4])
+  r4 <- append(r4, book[r.mn_id[i,1:length(paul_pos.list[[i]])] == 4])
 }
 
 r1_vec <- factor(unlist(r1))
@@ -386,7 +386,7 @@ for (i in 1:K) {
 Gamma_array[1,,] <- round(regime_1/sum(regime_1),5)
 Gamma_array[2,,] <- round(regime_2/sum(regime_2),5)
 Gamma_array[3,,] <- round(regime_3/sum(regime_3),5)
-Gamma_array[4,,] <- round(regime_3/sum(regime_4),5)
+Gamma_array[4,,] <- round(regime_4/sum(regime_4),5)
 
 ### Add small values for 0's
 for (i in 1:4) {
