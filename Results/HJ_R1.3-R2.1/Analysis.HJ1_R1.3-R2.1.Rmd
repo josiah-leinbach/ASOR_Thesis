@@ -18,14 +18,14 @@ source("/Users/josiahleinbach/Documents/ASOR_Thesis/R_files/hmm-paul.R")
 paul_pos.list_full <- readRDS("paul_6pos-HJ123.rds")
 paul_pos.list <- paul_pos.list_full[-c(16,17)]
 
-seed.list <- c(597,731,1066,1170,1215,1348,1415,1534,1556,1588,
+seed.list <- c(43,597,731,1066,1170,1215,1348,1415,1534,1556,1588,
                1605,1611,1660,1662,1688,1697,1704,1707,
                1741,1801,1805,1815,1945,2022)
 
 file.names <- numeric(0)
 
 for (i in 1:length(seed.list)) {
-  file.names[i] <- paste0("EMR.HJ123-R1.3-R2.1_NEW_",seed.list[i],".rds")
+  file.names[i] <- paste0("EMR.HJ1-R1.3-R2.1_NEW_",seed.list[i],".rds")
 }
 
 ```
@@ -298,7 +298,7 @@ for (i in 1:L) {
   r1 <- append(r1, book[r.mn_id[i,1:length(paul_pos.list[[i]])] == 1])
   r2 <- append(r2, book[r.mn_id[i,1:length(paul_pos.list[[i]])] == 2])
   r3 <- append(r3, book[r.mn_id[i,1:length(paul_pos.list[[i]])] == 3])
-  r4 <- append(r3, book[r.mn_id[i,1:length(paul_pos.list[[i]])] == 4])
+  r4 <- append(r4, book[r.mn_id[i,1:length(paul_pos.list[[i]])] == 4])
 }
 
 r1_vec <- factor(unlist(r1))
@@ -386,7 +386,7 @@ for (i in 1:K) {
 Gamma_array[1,,] <- round(regime_1/sum(regime_1),5)
 Gamma_array[2,,] <- round(regime_2/sum(regime_2),5)
 Gamma_array[3,,] <- round(regime_3/sum(regime_3),5)
-Gamma_array[4,,] <- round(regime_3/sum(regime_4),5)
+Gamma_array[4,,] <- round(regime_4/sum(regime_4),5)
 
 ### Add small values for 0's
 for (i in 1:4) {
