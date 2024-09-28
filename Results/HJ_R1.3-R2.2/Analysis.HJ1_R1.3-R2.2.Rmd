@@ -15,8 +15,7 @@ source("/Users/josiahleinbach/Documents/ASOR_Thesis/R_files/hmm-paul.R")
 ```
 
 ```{r}
-paul_pos.list_full <- readRDS("paul_6pos-HJ123.rds")
-paul_pos.list <- paul_pos.list_full[-c(16,17)]
+paul_pos.list <- readRDS("paul_6pos.rds")
 
 seed.list <- c(43,597,731,1066,1170,1215,1348,1415,1534,1556,1588,
                1605,1611,1660,1662,1688,1697,1704,1707,
@@ -25,7 +24,7 @@ seed.list <- c(43,597,731,1066,1170,1215,1348,1415,1534,1556,1588,
 file.names <- numeric(0)
 
 for (i in 1:length(seed.list)) {
-  file.names[i] <- paste0("EMR.HJ1-R1.3-R2.2_NEW_",seed.list[i],".rds")
+  file.names[i] <- paste0("EMR_R1.3-R2.2_",seed.list[i],".rds")
 }
 
 ```
@@ -42,7 +41,7 @@ stateList <- factor(c("AD", "I", "N", "P", "RA", "V"))
 stateList <- sort(stateList)
 K <- length(stateList)
 A <- diag(R)
-L <- 15
+L <- 13
 
 sent_leng <- numeric(L)
 for (i in 1:L) {
@@ -55,7 +54,7 @@ d1 <- 7
 r.mn_id <- matrix(NA, nrow = L, ncol = max(N))
 B <- matrix(0, nrow = R1, ncol = R)
 
-pi_reg <- c(0.35, 0.23, 0.12, 0.2, 0.1)
+pi_reg <- c(0.4, 0.27, 0.13, 0.13, 0.07)
 for (i in 1:R1){
   B[i,i] <- 1
 }
@@ -251,32 +250,6 @@ for (i in 1:R) {
   }
 }
 
-# Hebrews
-for (i in 1:R) {
-  for (j in 1:R) {
-    counter <- numeric(0)
-    for (k in 1:(N[14]-1)) {
-      if (r.mn_id[14,k] == i && r.mn_id[14,k+1] == j) {
-        counter <- append(counter, 1)
-      }
-    }
-    A[i,j] <- A[i,j] + sum(counter)
-  }
-}
-
-# 1 John
-for (i in 1:R) {
-  for (j in 1:R) {
-    counter <- numeric(0)
-    for (k in 1:(N[15]-1)) {
-      if (r.mn_id[15,k] == i && r.mn_id[15,k+1] == j) {
-        counter <- append(counter, 1)
-      }
-    }
-    A[i,j] <- A[i,j] + sum(counter)
-  }
-}
-
 
 # Normalize rows
 A <- round(A/rowSums(A), 4)
@@ -285,7 +258,6 @@ rownames(A) <- c("R1","R2","R3","R4","R5")
 
 
 ### Alpha Matrix
-
 r1 <- vector(mode = "list", length = 0)
 r2 <- vector(mode = "list", length = 0)
 r3 <- vector(mode = "list", length = 0)
@@ -303,19 +275,44 @@ for (i in 1:L) {
   r5 <- append(r5, book[r.mn_id[i,1:length(paul_pos.list[[i]])] == 5])
 }
 
-r1_vec <- factor(unlist(r1))
-r2_vec <- factor(unlist(r2))
-r3_vec <- factor(unlist(r3))
-r4_vec <- factor(unlist(r4))
-r5_vec <- factor(unlist(r5))
+r1_vec <- numeric(0)
+for (i in 1:length(r1)) {
+  r1_vec[i] <- as.character(r1[[i]][1])
+}
+r1_vec <- factor(r1_vec)
 
+r2_vec <- numeric(0)
+for (i in 1:length(r2)) {
+  r2_vec[i] <- as.character(r2[[i]][1])
+}
+r2_vec <- factor(r2_vec)
+
+r3_vec <- numeric(0)
+for (i in 1:length(r3)) {
+  r3_vec[i] <- as.character(r3[[i]][1])
+}
+r3_vec <- factor(r3_vec)
+
+r4_vec <- numeric(0)
+for (i in 1:length(r4)) {
+  r4_vec[i] <- as.character(r4[[i]][1])
+}
+r4_vec <- factor(r4_vec)
+
+r5_vec <- numeric(0)
+for (i in 1:length(r5)) {
+  r5_vec[i] <- as.character(r5[[i]][1])
+}
+r5_vec <- factor(r5_vec)
+
+# Apply to matrix
 r_list <- vector(mode = "list", length = 5)
 r_list[[1]] <- as.character(r1_vec); r_list[[2]] <- as.character(r2_vec); r_list[[3]] <- as.character(r3_vec); r_list[[4]] <- as.character(r4_vec); r_list[[5]] <- as.character(r5_vec)
 
 for (i in 1:5) {
   for (j in 1:length(stateList)) {
     q <- as.character(stateList[j])
-    Alpha[i,j] <- (sum(r_list[[i]] == q))/length(r_list[[i]])
+    Alpha[i,j] <- round((sum(r_list[[i]] == q))/length(r_list[[i]]),4)
   }
 }
 
@@ -324,7 +321,6 @@ rownames(Alpha) <- c("R1", "R2", "R3", "R4", "R5")
 
 
 ### Gamma matrix
-
 Gamma_array <- array(0, dim=c(R,K,K))
 
 # Regime 1
@@ -333,9 +329,14 @@ regime_1 <- matrix(data = NA, K, K)
 for (i in 1:K) {
   for (j in 1:K) {
     counter <- numeric(0)
-    for (k in 1:(length(r1_vec)-1)) {
-      if (r1_vec[k] == stateList[i] && r1_vec[k+1] == stateList[j]) {
-        counter <- append(counter, 1)
+    for (k in 1:(length(r1))) {
+      r_work <- r1[[k]]
+      if (length(r_work) > 1) {
+        for (l in 1:(length(r_work)-1)) {
+          if (r_work[l] == stateList[i] && r_work[l+1] == stateList[j]) {
+            counter <- append(counter, 1)
+            }
+          }
       }
       regime_1[i,j] <- sum(counter)
     }
@@ -348,9 +349,14 @@ regime_2 <- matrix(data = NA, K, K)
 for (i in 1:K) {
   for (j in 1:K) {
     counter <- numeric(0)
-    for (k in 1:(length(r2_vec)-1)) {
-      if (r2_vec[k] == stateList[i] && r2_vec[k+1] == stateList[j]) {
-        counter <- append(counter, 1)
+    for (k in 1:(length(r2))) {
+      r_work <- r2[[k]]
+      if (length(r_work) > 1) {
+        for (l in 1:(length(r_work)-1)) {
+          if (r_work[l] == stateList[i] && r_work[l+1] == stateList[j]) {
+            counter <- append(counter, 1)
+            }
+          }
       }
       regime_2[i,j] <- sum(counter)
     }
@@ -363,9 +369,14 @@ regime_3 <- matrix(data = NA, K, K)
 for (i in 1:K) {
   for (j in 1:K) {
     counter <- numeric(0)
-    for (k in 1:(length(r3_vec)-1)) {
-      if (r3_vec[k] == stateList[i] && r3_vec[k+1] == stateList[j]) {
-        counter <- append(counter, 1)
+    for (k in 1:(length(r3))) {
+      r_work <- r3[[k]]
+      if (length(r_work) > 1) {
+        for (l in 1:(length(r_work)-1)) {
+          if (r_work[l] == stateList[i] && r_work[l+1] == stateList[j]) {
+            counter <- append(counter, 1)
+            }
+          }
       }
       regime_3[i,j] <- sum(counter)
     }
@@ -378,24 +389,34 @@ regime_4 <- matrix(data = NA, K, K)
 for (i in 1:K) {
   for (j in 1:K) {
     counter <- numeric(0)
-    for (k in 1:(length(r4_vec)-1)) {
-      if (r4_vec[k] == stateList[i] && r4_vec[k+1] == stateList[j]) {
-        counter <- append(counter, 1)
+    for (k in 1:(length(r4))) {
+      r_work <- r4[[k]]
+      if (length(r_work) > 1) {
+        for (l in 1:(length(r_work)-1)) {
+          if (r_work[l] == stateList[i] && r_work[l+1] == stateList[j]) {
+            counter <- append(counter, 1)
+            }
+          }
       }
       regime_4[i,j] <- sum(counter)
     }
   }
 }
 
-# Regime 5
+# Regime 4
 regime_5 <- matrix(data = NA, K, K)
 
 for (i in 1:K) {
   for (j in 1:K) {
     counter <- numeric(0)
-    for (k in 1:(length(r5_vec)-1)) {
-      if (r5_vec[k] == stateList[i] && r5_vec[k+1] == stateList[j]) {
-        counter <- append(counter, 1)
+    for (k in 1:(length(r5))) {
+      r_work <- r5[[k]]
+      if (length(r_work) > 1) {
+        for (l in 1:(length(r_work)-1)) {
+          if (r_work[l] == stateList[i] && r_work[l+1] == stateList[j]) {
+            counter <- append(counter, 1)
+            }
+          }
       }
       regime_5[i,j] <- sum(counter)
     }
