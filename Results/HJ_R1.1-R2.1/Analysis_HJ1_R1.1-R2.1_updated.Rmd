@@ -20,7 +20,7 @@ seed.list <- c(43,597,731,1066,1170,1215,1348,1415,1534,1556,1588,1605,1611,
 
 file.names <- numeric(0) 
 for (i in 1:length(seed.list)) {
-  file.names[i] <- paste0("EMR.HJ1-R1.2-R2.2_", seed.list[i], ".rds")
+  file.names[i] <- paste0("EMR.HJ1-R1.1-R2.1_", seed.list[i], ".rds")
 }
 
 BIC.HJ1_6pos_r1.1_r2.1 <- numeric(length(seed.list))
