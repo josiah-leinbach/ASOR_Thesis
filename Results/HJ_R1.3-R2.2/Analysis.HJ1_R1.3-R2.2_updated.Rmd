@@ -15,7 +15,8 @@ source("/Users/josiahleinbach/Documents/ASOR_Thesis/R_files/hmm-paul.R")
 ```
 
 ```{r}
-paul_pos.list <- readRDS("paul_6pos.rds")
+paul_pos.list_full <- readRDS("paul_6pos-HJ123.rds")
+paul_pos.list <- paul_pos.list_full[-c(16,17)]
 
 seed.list <- c(43,597,731,1066,1170,1215,1348,1415,1534,1556,1588,
                1605,1611,1660,1662,1688,1697,1704,1707,
@@ -24,7 +25,7 @@ seed.list <- c(43,597,731,1066,1170,1215,1348,1415,1534,1556,1588,
 file.names <- numeric(0)
 
 for (i in 1:length(seed.list)) {
-  file.names[i] <- paste0("EMR_R1.3-R2.2_",seed.list[i],".rds")
+  file.names[i] <- paste0("EMR.HJ1-R1.3-R2.2_",seed.list[i],".rds")
 }
 
 ```
@@ -41,7 +42,7 @@ stateList <- factor(c("AD", "I", "N", "P", "RA", "V"))
 stateList <- sort(stateList)
 K <- length(stateList)
 A <- diag(R)
-L <- 13
+L <- 15
 
 sent_leng <- numeric(L)
 for (i in 1:L) {
@@ -54,7 +55,7 @@ d1 <- 7
 r.mn_id <- matrix(NA, nrow = L, ncol = max(N))
 B <- matrix(0, nrow = R1, ncol = R)
 
-pi_reg <- c(0.4, 0.27, 0.13, 0.13, 0.07)
+pi_reg <- c(0.35, 0.23, 0.12, 0.2, 0.1)
 for (i in 1:R1){
   B[i,i] <- 1
 }
@@ -243,6 +244,32 @@ for (i in 1:R) {
     counter <- numeric(0)
     for (k in 1:(N[13]-1)) {
       if (r.mn_id[13,k] == i && r.mn_id[13,k+1] == j) {
+        counter <- append(counter, 1)
+      }
+    }
+    A[i,j] <- A[i,j] + sum(counter)
+  }
+}
+
+# Hebrews
+for (i in 1:R) {
+  for (j in 1:R) {
+    counter <- numeric(0)
+    for (k in 1:(N[14]-1)) {
+      if (r.mn_id[14,k] == i && r.mn_id[14,k+1] == j) {
+        counter <- append(counter, 1)
+      }
+    }
+    A[i,j] <- A[i,j] + sum(counter)
+  }
+}
+
+# 1 John
+for (i in 1:R) {
+  for (j in 1:R) {
+    counter <- numeric(0)
+    for (k in 1:(N[15]-1)) {
+      if (r.mn_id[15,k] == i && r.mn_id[15,k+1] == j) {
         counter <- append(counter, 1)
       }
     }
