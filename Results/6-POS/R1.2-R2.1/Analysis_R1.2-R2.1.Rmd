@@ -27,7 +27,7 @@ BIC.6pos_r1.2_r2.1 <- numeric(length(seed.list))
 
 # R1 = 2, R2 = 1, POS = 6
 ```{r}
-for (w in 2:length(file.names)) {
+for (w in 1:length(file.names)) {
   
 print(seed.list[w])
 paul_pos.list <- readRDS("paul_6pos.rds")
@@ -267,7 +267,6 @@ for (i in 1:L) {
   r1 <- append(r1, book[r.mn_id[i,1:length(paul_pos.list[[i]])] == 1])
   r2 <- append(r2, book[r.mn_id[i,1:length(paul_pos.list[[i]])] == 2])
   r3 <- append(r3, book[r.mn_id[i,1:length(paul_pos.list[[i]])] == 3])
-
 }
 
 r1_vec <- numeric(0)
@@ -306,14 +305,30 @@ rownames(Alpha) <- c("R1", "R2", "R3")
 ### Gamma matrix
 Gamma_array <- array(0, dim=c(R,K,K))
 
+r1 <- vector(mode = "list", length = 0)
+r2 <- vector(mode = "list", length = 0)
+r3 <- vector(mode = "list", length = 0)
+
+Alpha <- matrix(0, nrow = R, ncol = length(stateList))
+
+for (i in 1:L) {
+  book <- paul_pos.list[[i]]
+  r1 <- append(r1, book[r.mn_id[i,1:length(paul_pos.list[[i]])] == 1])
+  r2 <- append(r2, book[r.mn_id[i,1:length(paul_pos.list[[i]])] == 2])
+  r3 <- append(r3, book[r.mn_id[i,1:length(paul_pos.list[[i]])] == 3])
+}
+
+r1_vec.2 <- factor(unlist(r1))
+r2_vec.2 <- factor(unlist(r2))
+r3_vec.2 <- factor(unlist(r3))
 # Regime 1
 regime_1 <- matrix(data = NA, K, K)
 
 for (i in 1:K) {
   for (j in 1:K) {
     counter <- numeric(0)
-    for (k in 1:(length(r1_vec)-1)) {
-      if (r1_vec[k] == stateList[i] && r1_vec[k+1] == stateList[j]) {
+    for (k in 1:(length(r1_vec.2)-1)) {
+      if (r1_vec.2[k] == stateList[i] && r1_vec.2[k+1] == stateList[j]) {
         counter <- append(counter, 1)
       }
       regime_1[i,j] <- sum(counter)
@@ -327,8 +342,8 @@ regime_2 <- matrix(data = NA, K, K)
 for (i in 1:K) {
   for (j in 1:K) {
     counter <- numeric(0)
-    for (k in 1:(length(r2_vec)-1)) {
-      if (r2_vec[k] == stateList[i] && r2_vec[k+1] == stateList[j]) {
+    for (k in 1:(length(r2_vec.2)-1)) {
+      if (r2_vec.2[k] == stateList[i] && r2_vec.2[k+1] == stateList[j]) {
         counter <- append(counter, 1)
       }
       regime_2[i,j] <- sum(counter)
@@ -342,8 +357,8 @@ regime_3 <- matrix(data = NA, K, K)
 for (i in 1:K) {
   for (j in 1:K) {
     counter <- numeric(0)
-    for (k in 1:(length(r3_vec)-1)) {
-      if (r3_vec[k] == stateList[i] && r3_vec[k+1] == stateList[j]) {
+    for (k in 1:(length(r3_vec.2)-1)) {
+      if (r3_vec.2[k] == stateList[i] && r3_vec.2[k+1] == stateList[j]) {
         counter <- append(counter, 1)
       }
       regime_3[i,j] <- sum(counter)
