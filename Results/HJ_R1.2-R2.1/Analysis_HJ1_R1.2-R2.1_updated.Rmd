@@ -29,7 +29,7 @@ BIC.HJ1_6pos_r1.2_r2.1 <- numeric(length(seed.list))
 ```{r}
 for (w in 1:length(file.names)) {
   
-paul_pos.list_full <- readRDS("paul_6pos.rds")
+paul_pos.list_full <- readRDS("paul_6pos-HJ123.rds")
 paul_pos.list <- paul_pos.list_full[-c(16:17)]
 
 R = 3
