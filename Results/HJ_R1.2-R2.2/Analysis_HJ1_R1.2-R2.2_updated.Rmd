@@ -23,14 +23,16 @@ for (i in 1:length(seed.list)) {
   file.names[i] <- paste0("EMR.HJ1-R1.2-R2.2_", seed.list[i], ".rds")
 }
 
-BIC.6pos_r1.2_r2.2 <- numeric(length(seed.list))
+BIC.HJ1_6pos_r1.2_r2.2 <- numeric(length(seed.list))
 ```
 
 # R1 = 2, R2 = 2, POS = 6, 7 Undisputed
 ```{r}
 for (w in 1:25) {
   
-paul_pos.list <- readRDS("paul_6pos.rds")
+paul_pos.list_full <- readRDS("paul_6pos-HJ123.rds")
+paul_pos.list <- paul_pos.list_full[-c(16:17)]
+
 print(seed.list[w])
 
 R = 4
@@ -438,7 +440,7 @@ print(file.names[w])
 EMR <- EM(paul_pos.list, R1, d1, N, pi_reg, A, Alpha, Gamma_array, stateList, 0.001, 50)
 saveRDS(EMR,file.names[w])
 
-BIC.6pos_r1.2_r2.2[w] <- EMR$BIC
+BIC.HJ1_6pos_r1.2_r2.2[w] <- EMR$BIC
 
 }
 ```
