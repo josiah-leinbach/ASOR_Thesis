@@ -408,7 +408,7 @@ for (i in 1:4) {
 ## EM Algorithm: (1) R1 = 2, (2) R = 4, (3) POS = 6
 
 print(file.names[w])
-EMR <- EM(paul_pos.list, R1, d1, N, pi_reg, A, Alpha, Gamma_array, stateList, 0.001, 50)
+EMR <- EM(paul_pos.list, R1, d1, N, pi_reg, A, Alpha, Gamma_array, stateList, 10e-6, 50)
 saveRDS(EMR,file.names[w])
 
 BIC.6pos_r1.2_r2.2[w] <- EMR$BIC
