@@ -454,7 +454,7 @@ Gamma_array[1,,] <- round(regime_1/sum(regime_1),5)
 Gamma_array[2,,] <- round(regime_2/sum(regime_2),5)
 Gamma_array[3,,] <- round(regime_3/sum(regime_3),5)
 Gamma_array[4,,] <- round(regime_4/sum(regime_4),5)
-Gamma_array[5,,] <- round(regime_5/sum(regime_4),5)
+Gamma_array[5,,] <- round(regime_5/sum(regime_5),5)
 
 ### Add small values for 0's
 for (i in 1:5) {
