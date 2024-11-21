@@ -1,12 +1,20 @@
 library(ggplot2)
 library(tidyr)
 library(dplyr)
+library(paletteer)
+
+# Create color palettes
+paul_col <- paletteer_d("fishualize::Alosa_fallax")
+non_paul_col <- paletteer_d("NatParksPalettes::Cuyahoga")
+
+# Import files
 file.names <- list.files("/Users/josiahleinbach/Downloads/HHJ-R1.4.R2.2","EMR")
 setwd("/Users/josiahleinbach/Downloads/HHJ-R1.4.R2.2")
 N <- c(331, 377, 174, 110, 55, 50, 10, 55, 39, 25, 61, 46, 27,164, 96)
 books <- c("Rom", "Cor.1", "Cor.2", "Gal", "Php", "Thes.1", "Phm", "Eph", "Col", "Thes.2", "Tim.1", "Tim.2", "Tit",
           "Heb", "John.1")
 
+# Record BICs for random starts
 BIC_file.names <- numeric()
 for (i in 1:25) {
   rds <- readRDS(file.names[i])
@@ -17,10 +25,11 @@ BIC_file.names[order(BIC_file.names)] # Order of BICs
 file.num <- c(1066,1170,1215,1348,1415,1534,1556,1588,1605,1611,1660,1662,1688,
               1697,1704,1707,1741,1801,1805,1815,1945,2022,43,597,731)
 
+# Function to determine if sentence classification is ambiguous
 amb_func <- function(x) {
   z <- numeric()
   y <- order(x, decreasing = T)
-  if (sum(x > 0.7) == 1) {
+  if (sum(x > 0.7) == 1) { # Can use other value than 0.7
     z <- as.character(y[1])
   } else {
     z <- as.character("A")
@@ -28,9 +37,28 @@ amb_func <- function(x) {
   return(z)
 }
 
+
+# Aggregate classification plots
 book_long <- numeric(15) # 13
 for (i in 1:15) { # 13
   book_long[i] <- paste0(books[i],".","long")
+}
+
+for (i in 1:15) { # 13
+  book_df <- data.frame()
+  for (j in 1:25) {
+    rds <- readRDS(file.names[j])
+    rds_gamma <- rds$gamma
+    gamma_book <- round(rds_gamma[i,1:N[i],],2)
+    gamma_prob <- gamma_book > 0.7
+    gamma_order <- t(apply(gamma_book, MARGIN = 1, FUN = order))
+    results_vec <- factor(apply(gamma_book, MARGIN = 1, FUN = amb_func))
+    book_vec <- rep(books[i], N[i])
+    sent_vec <- c(1:N[i])
+    book_df.sub <- data.frame(Book = book_vec, Sentence = sent_vec, Style = results_vec)
+    book_df <- rbind(book_df, book_df.sub)
+  }
+  assign(book_long[i], book_df)
 }
 
 #### ID assignments: Ambiguous ####
@@ -49,7 +77,7 @@ for (w in 1:25) {
     main_df.sub <- data.frame(Book = book_vec, Sentence = sent_vec, ID = results_vec)
     main_df <- rbind(main_df, main_df.sub)
   }
-  main_df$ID <- factor(main_df$ID, levels = c("1","2","3","4","5", "6","A"))
+  main_df$ID <- factor(main_df$ID, levels = c("1","2","3","4","5", "6","A")) # Set main Pauline style as PS_1
   main_df$Book <- factor(main_df$Book, levels = c(#"John.3", "John.2", 
                                                   "John.1", "Heb",
     "Tim.2","Tim.1","Tit","Eph","Col",
@@ -57,25 +85,6 @@ for (w in 1:25) {
     "Cor.1", "Thes.1", "Gal"))
   assign(paste0("Seed_", file.num[w], ".amb"), main_df)
 }
-
-# Aggregate classification plots
-for (i in 1:15) { # 13
-  book_df <- data.frame()
-  for (j in 1:25) {
-    rds <- readRDS(file.names[j])
-    rds_gamma <- rds$gamma
-    gamma_book <- round(rds_gamma[i,1:N[i],],2)
-    gamma_prob <- gamma_book > 0.7
-    gamma_order <- t(apply(gamma_book, MARGIN = 1, FUN = order))
-    results_vec <- factor(apply(gamma_book, MARGIN = 1, FUN = amb_func))
-    book_vec <- rep(books[i], N[i])
-    sent_vec <- c(1:N[i])
-    book_df.sub <- data.frame(Book = book_vec, Sentence = sent_vec, Style = results_vec)
-    book_df <- rbind(book_df, book_df.sub)
-  }
-  assign(book_long[i], book_df)
-}
-
 
 #### ID assignments: Absolute ####
 for (i in 1:25) {
@@ -89,7 +98,7 @@ for (i in 1:25) {
     main_df.sub <- data.frame(Book = book_vec, Sentence = sent_vec, ID = id_vec)
     main_df <- rbind(main_df, main_df.sub)
   }
-  main_df$ID <- factor(main_df$ID)
+  main_df$ID <- factor(main_df$ID) # Set main Pauline style as PS_1
   main_df$Book <- factor(main_df$Book, levels = c(#"John.3", "John.2", 
                                                   "John.1", "Heb",
                                                   "Tim.2","Tim.1","Tit","Eph","Col",
@@ -121,17 +130,14 @@ file.names[order(BIC_file.names)] # Solutions by order of BIC
 
 # Use either absolute (.abs) or ambiguous (.amb) in dataframe
 ggplot(Seed_1588.amb, aes(x = Sentence, y = Book, fill = factor(ID))) +
-  ggtitle("Style Distributions for 13 Book Claimed Pauline Corpus + Hebrews and 1 John") +
+  ggtitle("Style Distributions for 13 Book Claimed Pauline Corpus + Hebrews and 1 John",
+          subtitle = paste0("BIC = ", BIC_file.names[order(BIC_file.names)][1])) +
   geom_tile(width = 1, height = 1) + 
-  scale_fill_manual(values = c("1" = "blue", "2" = "lightblue", "3" = "dodgerblue", "4" = "violet",
-                               "5" = "orange", "6" = "red", "A" = "black"))
-
-ggplot(Seed_597.amb, aes(x = Sentence, y = Book, fill = factor(ID))) +
-  ggtitle("Style Distributions for 13 Book Claimed Pauline Corpus",
-          subtitle = paste0("BIC = ", BIC_file.names[7])) +
-  geom_tile(width = 1, height = 1) +
-  scale_fill_manual(values = c("1" = "blue", "2" = "lightblue", "3" = "dodgerblue", "4" = "violet",
-                               "5" = "orange", "6" = "red"))
+  labs(color = "Style") +
+  scale_fill_manual("Style", labels = c("PS_1","PS_2","PS_3","PS_4","NPS_1","NPS_2","Amb"), # Assumes reordered factor levels
+                    values = c("2" = paul_col[3], "1" = paul_col[2], "3" = paul_col[1], "4" = paul_col[4],
+                               "5" = non_paul_col[1], "6" = non_paul_col[2], "A" = "black")) +
+  theme_bw()
 
 
 ### Aggregate classification sequence plots ###
@@ -151,90 +157,3 @@ ggplot(Tim.1_long, aes(x = Sentence, y = Total, fill = Style)) +
                                "1_3" = "violet", "1_4" = "maroon2", "2_3" = "pink",
                                "2_4" = "purple", "3" = "orange", "3_4" = "forestgreen", "4" = "red")) +
   labs(title = "1 Timothy (13 Book Pauline Corpus)")
-
-# 2 Timothy
-Tim.2_long <- Tim.2.long %>%
-  count(Sentence, Style) %>%
-  complete(Sentence, Style, fill = list(n = 0))
-
-Tim.2_long$Style <- factor(Tim.2_long$Style, levels = c("1", "1_2", "2",
-                                                          "1_3", "1_4", "2_3", "2_4", 
-                                                          "3", "3_4", "4"))
-names(Tim.2_long)[3] <- "Total"
-
-ggplot(Tim.2_long, aes(x = Sentence, y = Total, fill = Style)) +
-  geom_col(position = "fill") + 
-  scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(values = c("1" = "blue", "2" = "lightblue", "1_2" = "dodgerblue",
-                               "1_3" = "violet", "1_4" = "maroon2", "2_3" = "pink",
-                               "2_4" = "purple", "3" = "orange", "3_4" = "forestgreen", "4" = "red")) +
-  labs(title = "2 Timothy (13 Book Pauline Corpus)")
-
-# Titus
-Tit_long <- Tit.long %>%
-  count(Sentence, Style) %>%
-  complete(Sentence, Style, fill = list(n = 0))
-
-Tit_long$Style <- factor(Tit_long$Style, levels = c("1", "1_2", "2",
-                                                          "1_3", "1_4", "2_3", "2_4", 
-                                                          "3", "3_4", "4"))
-names(Tit_long)[3] <- "Total"
-
-ggplot(Tit_long, aes(x = Sentence, y = Total, fill = Style)) +
-  geom_col(position = "fill") + 
-  scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(values = c("1" = "blue", "2" = "lightblue", "1_2" = "dodgerblue",
-                               "1_3" = "violet", "1_4" = "maroon2", "2_3" = "pink",
-                               "2_4" = "purple", "3" = "orange", "3_4" = "forestgreen", "4" = "red")) +
-  labs(title = "Titus (13 Book Pauline Corpus)")
-
-
-# Ephesians
-Eph_long <- Eph.long %>%
-  count(Sentence, Style) %>%
-  complete(Sentence, Style, fill = list(n = 0))
-
-Eph_long$Style <- factor(Eph_long$Style)
-names(Eph_long)[3] <- "Total"
-
-ggplot(Eph_long, aes(x = Sentence, y = Total, fill = Style)) +
-  geom_col(position = "fill") + 
-  scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(values = c("1" = "blue", "2" = "orange", "1_2" = "violet",
-                               "1_3" = "violet", "1_4" = "maroon2", "2_3" = "pink",
-                               "2_4" = "purple", "3" = "orange", "3_4" = "forestgreen", "4" = "red")) +
-  labs(title = "Ephesians (13 Book Pauline Corpus)")
-
-# Colossians
-Col_long <- Col.long %>%
-  count(Sentence, Style) %>%
-  complete(Sentence, Style, fill = list(n = 0))
-
-Col_long$Style <- factor(Col_long$Style)
-names(Col_long)[3] <- "Total"
-
-ggplot(Col_long, aes(x = Sentence, y = Total, fill = Style)) +
-  geom_col(position = "fill") + 
-  scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(values = c("1" = "blue", "2" = "Orange", "1_2" = "violet",
-                               "1_3" = "violet", "1_4" = "maroon2", "2_3" = "pink",
-                               "2_4" = "purple", "3" = "orange", "3_4" = "forestgreen", "4" = "red")) +
-  labs(title = "Colossians (13 Book Pauline Corpus)")
-
-# 2 Thessalonians
-Thes.2_long <- Thes.2.long %>%
-  count(Sentence, Style) %>%
-  complete(Sentence, Style, fill = list(n = 0))
-
-Thes.2_long$Style <- factor(Thes.2_long$Style, levels = c("1", "1_2", "2",
-                                                      "1_3", "1_4", "2_3", "2_4", 
-                                                      "3", "3_4", "4"))
-names(Thes.2_long)[3] <- "Total"
-
-ggplot(Thes.2_long, aes(x = Sentence, y = Total, fill = Style)) +
-  geom_col(position = "fill") + 
-  scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(values = c("1" = "blue", "2" = "lightblue", "1_2" = "dodgerblue",
-                               "1_3" = "violet", "1_4" = "maroon2", "2_3" = "pink",
-                               "2_4" = "purple", "3" = "orange", "3_4" = "forestgreen", "4" = "red")) +
-  labs(title = "2 Thessalonians (13 Book Pauline Corpus)")
