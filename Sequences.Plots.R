@@ -140,7 +140,7 @@ ggplot(Seed_1588.amb, aes(x = Sentence, y = Book, fill = factor(ID))) +
   theme_bw()
 
 
-### Aggregate classification sequence plots ###
+### Aggregate classification sequence plot (if needed) ###
 # 1 Timothy
 Tim.1_long <- Tim.1.long %>%
   count(Sentence, Style) %>%
