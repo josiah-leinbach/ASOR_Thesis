@@ -137,7 +137,11 @@ ggplot(Seed_1588.amb, aes(x = Sentence, y = Book, fill = factor(ID))) +
   scale_fill_manual("Style", labels = c("PS_1","PS_2","PS_3","PS_4","NPS_1","NPS_2","Amb"), # Assumes reordered factor levels
                     values = c("2" = paul_col[3], "1" = paul_col[2], "3" = paul_col[1], "4" = paul_col[4],
                                "5" = non_paul_col[1], "6" = non_paul_col[2], "A" = "black")) +
-  theme_bw()
+  theme_classic() +
+  theme(axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.y = element_text(size = 10),
+        legend.position = "none")
 
 
 ### Aggregate classification sequence plot (if needed) ###
